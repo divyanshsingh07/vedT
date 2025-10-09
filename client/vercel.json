@@ -3,7 +3,7 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "env": {
-    "VITE_API_URL": "https://vedified-blogs-server.vercel.app"
+    "VITE_API_URL": "https://ved-7jpz.onrender.com"
   },
   "rewrites": [
     {
