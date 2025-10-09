@@ -32,6 +32,11 @@ server/.env.*
 client/.env
 client/.env.*
 
+# Firebase Service Account (NEVER commit!)
+serviceAccount.json
+*serviceAccount*.json
+firebase-encoded.txt
+
 # Vercel
 .vercel
 k8s/
