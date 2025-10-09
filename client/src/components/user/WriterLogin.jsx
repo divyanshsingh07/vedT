@@ -6,7 +6,7 @@ import { signInWithPopup } from 'firebase/auth'
 import { auth, googleProvider } from '../../configs/firebase'
 
 const WriterLogin = () => {
-  const { axios, setToken } = useAppContext();
+  const { axios, setToken, setLoginBlocked } = useAppContext();
   const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
 
@@ -19,6 +19,19 @@ const WriterLogin = () => {
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
+      // Optional client-side allowlist via env var
+      const allowedCsv = (import.meta.env.VITE_ALLOWED_USER_EMAILS || '').trim();
+      if (allowedCsv) {
+        const allowed = allowedCsv.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+        const emailLower = (user.email || '').trim().toLowerCase();
+        if (!allowed.includes(emailLower)) {
+          toast.error('Access restricted. Please contact the developer to request access.');
+          setLoginBlocked(true);
+          setIsLoading(false);
+          return;
+        }
+      }
+      
       const idToken = await user.getIdToken();
       const { data } = await axios.post('/api/auth/firebase-user-login', { idToken });
       if (data.success) {
@@ -29,6 +42,9 @@ const WriterLogin = () => {
         navigate('/writer');
       } else {
         toast.error(data.message);
+        if (data.code === 'REGISTRATION_CLOSED') {
+          setLoginBlocked(true);
+        }
       }
     } catch (error) {
       toast.error('Google sign-in failed.');

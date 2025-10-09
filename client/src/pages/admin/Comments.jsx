@@ -4,15 +4,21 @@ import { assets } from '../../assets/assets'
 import toast from 'react-hot-toast'
 
 const Comments = () => {
-  const { axios } = useAppContext()
+  const { axios, user, navigate } = useAppContext()
   const [comments, setComments] = useState([])
   const [filter, setFilter] = useState('all')
   const [loading, setLoading] = useState(true)
 
   // Fetch comments from backend
   useEffect(() => {
+    // Redirect non-admins away from admin comments page
+    if (user && user.role !== 'admin') {
+      toast.error('Admin access required')
+      navigate('/')
+      return
+    }
     fetchComments()
-  }, [])
+  }, [user])
 
   const fetchComments = async () => {
     try {

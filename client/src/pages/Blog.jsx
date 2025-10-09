@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 
 const Blog = () => {
   const { id } = useParams();
-  const { axios, blogs, navigate } = useAppContext();
+  const { axios, blogs, navigate, user } = useAppContext();
 
   const [blog, setBlog] = useState(null);
   const [comments, setComments] = useState([]);
@@ -91,6 +91,13 @@ const Blog = () => {
       console.error(err);
       toast.error('Failed to delete comment. Please try again.');
     }
+  };
+
+  const canDeleteComment = (comment) => {
+    if (!user) return false;
+    const isAdmin = user.role === 'admin';
+    const isCommentAuthor = user.email && comment?.authorEmail && user.email === comment.authorEmail;
+    return isAdmin || isCommentAuthor;
   };
 
   if (!id) return <><Navbar /><p>Blog list here...</p></>;
@@ -283,10 +290,12 @@ const Blog = () => {
                       <span className="text-xs text-gray-800 font-semibold">{new Date(comment.createdAt).toLocaleDateString()}</span>
                     </div>
                     <p className="text-gray-800 font-semibold">{comment.content}</p>
-                    <button onClick={() => handleDeleteComment(comment._id)} className="text-red-600 text-sm mt-1 hover:text-red-800 font-bold inline-flex items-center gap-1 border border-red-600 hover:border-red-800 px-2 py-1">
-                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862A2 2 0 015.995 19.142L5.128 7m3.372 0V4a1 1 0 011-1h5a1 1 0 011 1v3M4 7h16"/></svg>
-                      Delete
-                    </button>
+                    {canDeleteComment(comment) && (
+                      <button onClick={() => handleDeleteComment(comment._id)} className="text-red-600 text-sm mt-1 hover:text-red-800 font-bold inline-flex items-center gap-1 border border-red-600 hover:border-red-800 px-2 py-1">
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862A2 2 0 015.995 19.142L5.128 7m3.372 0V4a1 1 0 011-1h5a1 1 0 011 1v3M4 7h16"/></svg>
+                        Delete
+                      </button>
+                    )}
                   </div>
                 ))}
               </div>

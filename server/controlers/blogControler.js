@@ -410,7 +410,8 @@ export const addComment = async (req, res) => {
     try{
         const{blog,name , content} = req.body;
         // Create comment with pending status by default
-        await Comment.create({blog, name, content, isApproved: false});
+        const authorEmail = req.user?.email || null;
+        await Comment.create({blog, name, authorEmail, content, isApproved: false});
         res.json({success: true, message: "Comment added successfully. It will be visible after admin approval."});
 
     }
@@ -440,13 +441,18 @@ export const deleteComment = async (req, res) => {
             return res.json({ success: false, message: "Comment not found" });
         }
 
-        // Authorization: only the blog owner can delete comments on their blog
+        // Authorization: only commenter or admin can delete
         const blog = await Blog.findById(comment.blog);
         if (!blog) {
             return res.json({ success: false, message: "Parent blog not found" });
         }
 
-        if (!req.user?.email || blog.authorEmail !== req.user.email) {
+        const requesterEmail = req.user?.email;
+        const requesterRole = req.user?.role;
+        const isAdmin = requesterRole === 'admin';
+        const isCommentAuthor = requesterEmail && comment.authorEmail && comment.authorEmail === requesterEmail;
+
+        if (!requesterEmail || (!isAdmin && !isCommentAuthor)) {
             return res.json({ success: false, message: "Not authorized to delete this comment" });
         }
 

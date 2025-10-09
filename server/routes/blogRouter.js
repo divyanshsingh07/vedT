@@ -3,6 +3,7 @@ import multer from 'multer';
 import { createBlog, getBlogs, getAllBlogs, getBlogById, deleteBlogById, togglePublishedStatus, deleteComment, updateBlog, generateContent } from '../controlers/blogControler.js';
 import jwt from 'jsonwebtoken';
 import { addComment, getBlogComments } from '../controlers/blogControler.js';
+import auth from '../middleware/auth.js';
 
 
 const router = express.Router();
@@ -69,8 +70,8 @@ router.get('/all', getAllBlogs);
 router.post('/create', authenticateToken, upload.single('image'), createBlog);
 router.post('/add', authenticateToken, upload.single('image'), createBlog);
 router.put('/:blogId', authenticateToken, upload.single('image'), updateBlog); 
-router.post('/addComment', authenticateToken, addComment); 
-router.delete('/comment/:commentId', authenticateToken, deleteComment);
+router.post('/addComment', addComment); 
+router.delete('/comment/:commentId', auth, deleteComment);
 router.get('/:blogId/comments', getBlogComments);
 router.get('/:blogId', getBlogById); 
 router.delete('/:blogId', authenticateToken, deleteBlogById); 
@@ -78,8 +79,8 @@ router.post('/:id/togglePublish', authenticateToken, togglePublishedStatus);
 router.post('/togglePublish', authenticateToken, togglePublishedStatus); 
 router.post('/generateContent', authenticateToken, generateContent); 
 
-// Test endpoint for AI generation (no auth required for debugging)
-router.post('/test-ai', async (req, res) => {
+// Test endpoint for AI generation (now requires auth)
+router.post('/test-ai', authenticateToken, async (req, res) => {
   try {
     const { title, category } = req.body;
     console.log('🧪 Testing AI endpoint with:', { title, category });
@@ -109,8 +110,8 @@ router.post('/test-ai', async (req, res) => {
   }
 });
 
-// Debug endpoint for testing blog creation (no auth, no file upload)
-router.post('/debug-create', async (req, res) => {
+// Debug endpoint for testing blog creation (now requires auth)
+router.post('/debug-create', authenticateToken, async (req, res) => {
   try {
     console.log('🔍 Debug blog creation test started');
     console.log('Request body:', req.body);
