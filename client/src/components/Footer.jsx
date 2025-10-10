@@ -114,7 +114,7 @@ const Footer = () => {
 
               {/* Instagram */}
               <a 
-                href='https://instagram.com/divyanshsingh07' 
+                href='https://instagram.com/arshthakur07' 
                 target='_blank' 
                 rel='noopener noreferrer'
                 className='flex items-center gap-2 px-4 py-2 bg-white border-2 border-black rounded-xl font-semibold text-sm hover:bg-black hover:text-white transition-all duration-300 shadow hover:shadow-lg'
