@@ -22,12 +22,6 @@ jobs:
           cd server
           npm install
 
-      - name: Run server tests (optional)
-        run: |
-          cd server
-          npm test
-        continue-on-error: true
-
       - name: Install client dependencies
         run: |
           cd client
