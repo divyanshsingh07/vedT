@@ -11,7 +11,14 @@ dotenv.config();
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: [
+    "http://vedified-frontend-prod.s3-website.ap-south-1.amazonaws.com",
+    "http://localhost:5173"
+  ],
+  methods: "GET,POST,PUT,DELETE",
+  credentials: true
+}));
 app.use(express.json({ limit: '20mb' })); // Increased limit for JSON payloads
 app.use(express.urlencoded({ extended: true, limit: '20mb' })); // Increased limit for URL-encoded payloads
 
