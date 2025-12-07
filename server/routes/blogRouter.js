@@ -52,7 +52,7 @@ const authenticateToken = (req, res, next) => {
 const upload = multer({ 
     storage: multer.memoryStorage(), // Use memory storage for serverless
     limits: {
-        fileSize: 5 * 1024 * 1024 // 5MB limit
+        fileSize: 20 * 1024 * 1024 // 20MB limit (increased from 5MB)
     },
     fileFilter: (req, file, cb) => {
         // Accept only images
@@ -64,12 +64,42 @@ const upload = multer({
     }
 });
 
+// Wrapper function to handle multer errors
+const handleUpload = (uploadMiddleware) => {
+    return (req, res, next) => {
+        uploadMiddleware(req, res, (err) => {
+            if (err instanceof multer.MulterError) {
+                if (err.code === 'LIMIT_FILE_SIZE') {
+                    return res.status(400).json({
+                        success: false,
+                        message: `File too large. Maximum file size is 20MB.`,
+                        error: err.message
+                    });
+                }
+                return res.status(400).json({
+                    success: false,
+                    message: `File upload error: ${err.message}`,
+                    error: err.message
+                });
+            }
+            if (err) {
+                return res.status(400).json({
+                    success: false,
+                    message: err.message || 'File upload error',
+                    error: err.message
+                });
+            }
+            next();
+        });
+    };
+};
+
 // Blog routes
 router.get('/', authenticateToken, getBlogs); 
 router.get('/all', getAllBlogs);
-router.post('/create', authenticateToken, upload.single('image'), createBlog);
-router.post('/add', authenticateToken, upload.single('image'), createBlog);
-router.put('/:blogId', authenticateToken, upload.single('image'), updateBlog); 
+router.post('/create', authenticateToken, handleUpload(upload.single('image')), createBlog);
+router.post('/add', authenticateToken, handleUpload(upload.single('image')), createBlog);
+router.put('/:blogId', authenticateToken, handleUpload(upload.single('image')), updateBlog); 
 router.post('/addComment', addComment); 
 router.delete('/comment/:commentId', auth, deleteComment);
 router.get('/:blogId/comments', getBlogComments);

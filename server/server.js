@@ -12,8 +12,8 @@ const app = express();
 
 // Middleware
 app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '20mb' })); // Increased limit for JSON payloads
+app.use(express.urlencoded({ extended: true, limit: '20mb' })); // Increased limit for URL-encoded payloads
 
 // Connect to Database (await to avoid buffering timeouts on first requests)
 await connectDB().catch((err) => {
