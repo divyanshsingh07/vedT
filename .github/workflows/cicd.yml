@@ -17,7 +17,6 @@ jobs:
         with:
           node-version: 20
 
-      # Install server dependencies (optional tests)
       - name: Install server dependencies
         run: |
           cd server
@@ -29,7 +28,6 @@ jobs:
           npm test
         continue-on-error: true
 
-      # Install & build client
       - name: Install client dependencies
         run: |
           cd client
@@ -40,7 +38,6 @@ jobs:
           cd client
           npm run build
 
-      # Upload client build as artifact
       - name: Upload client build artifact
         uses: actions/upload-artifact@v4
         with:
@@ -70,29 +67,29 @@ jobs:
           aws s3 sync dist s3://${{ secrets.AWS_S3_BUCKET }} --delete
 
   deploy-backend:
-  needs: build-and-test
-  runs-on: ubuntu-latest
+    needs: build-and-test
+    runs-on: ubuntu-latest
 
-  steps:
-    - name: Deploy to EC2 via SSH
-      uses: appleboy/ssh-action@v1.2.0
-      with:
-        host: ${{ secrets.EC2_HOST }}
-        username: ubuntu
-        key: ${{ secrets.EC2_SSH_KEY }}
-        port: 22
-        script: |
-          cd ~
-          if [ -d "vedT" ]; then
-            cd vedT
-            git pull origin main
-          else
-            git clone https://github.com/divyanshsingh07/vedT.git
-            cd vedT
-          fi
+    steps:
+      - name: Deploy to EC2 via SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
+          script: |
+            cd ~
+            if [ -d "vedT" ]; then
+              cd vedT
+              git pull origin main
+            else
+              git clone https://github.com/divyanshsingh07/vedT.git
+              cd vedT
+            fi
 
-          cd server
-          npm install --production
+            cd server
+            npm install --production
 
-          pm2 restart vedified-server || pm2 start server.js --name vedified-server
-          pm2 save
+            pm2 restart vedified-server || pm2 start server.js --name vedified-server
+            pm2 save
