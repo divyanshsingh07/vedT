@@ -16,7 +16,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
 
       # Install server dependencies (optional tests)
       - name: Install server dependencies
@@ -97,4 +96,3 @@ jobs:
 
             pm2 restart vedified-server || pm2 start server.js --name vedified-server
             pm2 save
-
