@@ -1,0 +1,100 @@
+name: Vedified CI/CD
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      # Install server dependencies (optional tests)
+      - name: Install server dependencies
+        run: |
+          cd server
+          npm install
+
+      - name: Run server tests (optional)
+        run: |
+          cd server
+          npm test
+        continue-on-error: true
+
+      # Install & build client
+      - name: Install client dependencies
+        run: |
+          cd client
+          npm install
+
+      - name: Build client
+        run: |
+          cd client
+          npm run build
+
+      # Upload client build as artifact
+      - name: Upload client build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: client-build
+          path: client/dist
+
+  deploy-frontend:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download client build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: client-build
+          path: dist
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Sync build folder to S3
+        run: |
+          aws s3 sync dist s3://${{ secrets.AWS_S3_BUCKET }} --delete
+
+  deploy-backend:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to EC2 via SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: ${{ secrets.EC2_PORT }}
+          script: |
+            cd ~
+            if [ -d "vedT" ]; then
+              cd vedT
+              git pull origin main
+            else
+              git clone https://github.com/divyanshsingh07/vedT.git
+              cd vedT
+            fi
+
+            cd server
+            npm install --production
+
+            pm2 restart vedified-server || pm2 start server.js --name vedified-server
+            pm2 save
+
