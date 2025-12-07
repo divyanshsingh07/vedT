@@ -17,7 +17,7 @@ const Footer = () => {
               />
             </div>
             <h3 className='text-xl md:text-2xl font-black text-black mt-4 mb-2 text-center lg:text-left'>
-              Divyansh Singh
+              Divyansh Singh (Arsh Thakur)
             </h3>
             <div className='h-1 w-16 bg-gradient-to-r from-orange-500 to-amber-500 rounded-full mb-3'></div>
             <p className='text-xs md:text-sm text-gray-800 font-semibold text-center lg:text-left'>

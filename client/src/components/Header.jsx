@@ -34,7 +34,7 @@ function Header() {
       >
         <div className="inline-flex items-center justify-center border-2 border-black rounded-full px-5 py-1.5 gap-2 text-xs sm:text-sm font-bold text-black bg-amber-100 shadow-lg">
           <img src={assets.star_icon} alt="spark" className="w-3.5 h-3.5" />
-          <p className="">Write your blog with AI assistance</p>
+          <p className="">Write your blog with AI assistance </p>
         </div>
 
         <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight py-4 text-black">
