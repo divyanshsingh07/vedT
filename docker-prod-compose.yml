@@ -1,0 +1,18 @@
+services:
+  backend:
+    image: arshthakur/vedified-backend:latest
+    container_name: vedified-backend
+    ports:
+      - "4000:4000"
+    env_file:
+      - ./server/.env
+    restart: unless-stopped
+
+  frontend:
+    image: arshthakur/vedified-frontend:latest
+    container_name: vedified-frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    restart: unless-stopped
