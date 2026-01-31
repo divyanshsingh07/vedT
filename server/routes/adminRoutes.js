@@ -1,11 +1,12 @@
 import { 
-    adminlogin, 
+    adminlogin,
+    adminRegister,
     getAllCommentsAdmin, 
     getDashboardData, 
     deleteBlogAdmin, 
     deleteCommentAdmin, 
     approveCommentAdmin,
-    getAdminAccounts,
+    getAdminAccountsList,
     deleteAdminAccount,
     googleLogin,
     firebaseLogin
@@ -14,31 +15,70 @@ import express from "express";
 import auth from "../middleware/auth.js";
 import User from "../models/user.js";
 import jwt from "jsonwebtoken";
-import admin from "firebase-admin";
-import allowedFirebaseUsers from "../configs/allowedFirebaseUsers.js";
 
 const adminRout = express.Router();
+
+// Admin-only guard - must be defined before routes that use it
+const adminOnly = (req, res, next) => {
+    if (req.user?.role !== 'admin') {
+        return res.status(403).json({ success: false, message: "Admin access required" });
+    }
+    next();
+};
 
 // Debug: Log route registration
 console.log('🔧 Registering admin routes...');
 
 adminRout.post("/login", adminlogin);
+adminRout.post("/register", adminRegister);
 adminRout.post("/google-login", googleLogin);
 adminRout.post("/firebase-login", firebaseLogin);
 
-console.log('✅ Admin routes registered, including firebase-login');
-adminRout.get("/admin-accounts", getAdminAccounts);
-adminRout.delete("/admin-account", deleteAdminAccount);
-// Admin-only guard
-const adminOnly = (req, res, next) => {
-    if (req.user?.role !== 'admin') {
-        return res.json({ success: false, message: "Admin access required" });
+console.log('✅ Admin routes registered');
+adminRout.get("/admin-accounts", auth, adminOnly, getAdminAccountsList);
+adminRout.delete("/admin-account", auth, adminOnly, deleteAdminAccount);
+
+// Writer user management (admin only)
+adminRout.get("/users", auth, adminOnly, async (req, res) => {
+    try {
+        const users = await User.find({}).sort({ createdAt: -1 }).select("-__v");
+        res.json({ success: true, users });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
     }
-    next();
-};
+});
+
+adminRout.post("/users", auth, adminOnly, async (req, res) => {
+    try {
+        const { email, name, password } = req.body;
+        if (!email || !email.trim()) {
+            return res.status(400).json({ success: false, message: "Email is required" });
+        }
+        const trimmedEmail = email.trim().toLowerCase();
+        const existing = await User.findOne({ email: trimmedEmail });
+        if (existing) {
+            return res.status(400).json({ success: false, message: "User with this email already exists" });
+        }
+        const userData = { email: trimmedEmail, name: (name || "").trim() || trimmedEmail };
+        if (password && password.trim()) userData.password = password.trim();
+        const user = await User.create(userData);
+        res.json({ success: true, message: "Writer user created successfully", user: { email: user.email, name: user.name, _id: user._id } });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+adminRout.delete("/users/:userId", auth, adminOnly, async (req, res) => {
+    try {
+        await User.findByIdAndDelete(req.params.userId);
+        res.json({ success: true, message: "User removed successfully" });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
 
 adminRout.get("/comments", auth, adminOnly, getAllCommentsAdmin);
-adminRout.get("/dashboard", auth, getDashboardData);
+adminRout.get("/dashboard", auth, adminOnly, getDashboardData);
 adminRout.delete("/blog/:blogId", auth, adminOnly, deleteBlogAdmin);
 adminRout.post("/deleteComment/:commentId", auth, adminOnly, deleteCommentAdmin);
 adminRout.post("/approveComment/:commentId", auth, adminOnly, approveCommentAdmin);
@@ -48,72 +88,68 @@ export default adminRout;
 // ==== USER (WRITER) AUTH AND DASHBOARD ====
 export const userRout = express.Router();
 
-// POST /api/auth/firebase-user-login
-userRout.post("/auth/firebase-user-login", async (req, res) => {
+// POST /api/auth/writer-login
+userRout.post("/auth/writer-login", async (req, res) => {
     try {
-        const { idToken } = req.body;
-        if (!idToken) {
-            return res.json({ success: false, message: "Firebase idToken is required" });
+        const { email, password } = req.body;
+        if (!email || !password) {
+            return res.status(400).json({ success: false, message: "Email and password are required" });
         }
-
-        let email, name, picture;
-        // Hard block if Firebase Admin isn't configured (avoid local decode bypass)
-        if (!admin?.auth && process.env.ALLOW_LOCAL_DEV_LOGIN !== 'true') {
-            return res.json({ success: false, message: "Login temporarily disabled. Please contact the developer.", code: "REGISTRATION_CLOSED" });
+        if (!process.env.JWT_SECRET) {
+            return res.status(500).json({ success: false, message: "Server configuration error." });
         }
-
-        if (admin?.auth) {
-            const decoded = await admin.auth().verifyIdToken(idToken);
-            email = decoded.email;
-            name = decoded.name || decoded.email;
-            picture = decoded.picture;
-            // Block users not present in Firebase user list snapshot (or allowed list)
-            if (!allowedFirebaseUsers.isFirebaseEmailAllowed(email)) {
-                return res.json({ success: false, message: "New user registrations are closed. Please contact the developer.", code: "REGISTRATION_CLOSED" });
-            }
-        } else {
-            // local dev decode
-            const payload = JSON.parse(Buffer.from(idToken.split('.')[1], 'base64').toString());
-            email = payload.email;
-            name = payload.name || payload.email;
-            picture = payload.picture;
+        const user = await User.findOne({ email: email.trim().toLowerCase() });
+        if (!user) {
+            return res.status(401).json({ success: false, message: "Invalid email or password." });
         }
-
-        if (!email) {
-            return res.json({ success: false, message: "Token missing email" });
+        const match = await user.comparePassword(password);
+        if (!match) {
+            return res.status(401).json({ success: false, message: "Invalid email or password." });
         }
-
-        // Enforce single allowed email if configured
-        const allowed = (process.env.SINGLE_ALLOWED_EMAIL || "").trim().toLowerCase();
-        if (allowed && (email.trim().toLowerCase() !== allowed)) {
-            return res.json({ success: false, message: "Unauthorized user" });
-        }
-
-        // Optional explicit allowlist for writers
-        const allowedCsv = (process.env.ALLOWED_USER_EMAILS || "").trim();
-        if (allowedCsv) {
-            const list = allowedCsv.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
-            if (!list.includes((email || '').trim().toLowerCase())) {
-                return res.json({ success: false, message: "Access restricted to approved users only.", code: "REGISTRATION_CLOSED" });
-            }
-        }
-
-        // Allow login ONLY for existing users; do not auto-create new users
-        const existingUser = await User.findOne({ email });
-        if (!existingUser) {
-            return res.json({ success: false, message: "New user registrations are currently closed. Please contact the developer to request access.", code: "REGISTRATION_CLOSED" });
-        }
-
-        // Update existing user basic profile fields
-        existingUser.name = name;
-        if (picture) existingUser.photoURL = picture;
-        await existingUser.save();
-
-        const token = jwt.sign({ email, name, role: "user" }, process.env.JWT_SECRET);
-        return res.json({ success: true, message: "Login successful", token, user: { email, name, photoURL: existingUser.photoURL } });
+        const token = jwt.sign(
+            { email: user.email, name: user.name, role: "user" },
+            process.env.JWT_SECRET,
+            { expiresIn: "7d" }
+        );
+        return res.json({ success: true, message: "Login successful", token, user: { email: user.email, name: user.name, photoURL: user.photoURL } });
     } catch (error) {
-        console.error("user login error:", error);
-        return res.json({ success: false, message: error.message || "User authentication failed" });
+        console.error("Writer login error:", error);
+        return res.status(500).json({ success: false, message: error.message || "Login failed" });
+    }
+});
+
+// POST /api/auth/writer-register
+userRout.post("/auth/writer-register", async (req, res) => {
+    try {
+        const { email, password, name } = req.body;
+        if (!email || !password) {
+            return res.status(400).json({ success: false, message: "Email and password are required" });
+        }
+        if (!process.env.JWT_SECRET) {
+            return res.status(500).json({ success: false, message: "Server configuration error." });
+        }
+        if (password.length < 6) {
+            return res.status(400).json({ success: false, message: "Password must be at least 6 characters" });
+        }
+        const trimmedEmail = email.trim().toLowerCase();
+        const existing = await User.findOne({ email: trimmedEmail });
+        if (existing) {
+            return res.status(400).json({ success: false, message: "An account with this email already exists." });
+        }
+        const user = await User.create({
+            email: trimmedEmail,
+            password,
+            name: (name || "").trim() || trimmedEmail
+        });
+        const token = jwt.sign(
+            { email: user.email, name: user.name, role: "user" },
+            process.env.JWT_SECRET,
+            { expiresIn: "7d" }
+        );
+        return res.status(201).json({ success: true, message: "Account created!", token, user: { email: user.email, name: user.name } });
+    } catch (error) {
+        console.error("Writer register error:", error);
+        return res.status(500).json({ success: false, message: error.message || "Registration failed" });
     }
 });
 

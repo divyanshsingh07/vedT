@@ -5,6 +5,7 @@ import toast from 'react-hot-toast'
 
 const Comments = () => {
   const { axios, user, navigate } = useAppContext()
+  const canDeleteComment = (comment) => comment?.authorEmail && user?.email && comment.authorEmail.toLowerCase() === user.email.toLowerCase()
   const [comments, setComments] = useState([])
   const [filter, setFilter] = useState('all')
   const [loading, setLoading] = useState(true)
@@ -216,7 +217,7 @@ const Comments = () => {
                   {!comment.isApproved && (
                     <button 
                       onClick={() => handleApprove(comment._id)}
-                                                  className="flex-1 text-green-600 hover:text-green-800 bg-green-100 hover:bg-green-200 px-3 py-2 rounded-md text-xs font-bold transition-colors flex items-center justify-center gap-1 border border-green-600"
+                      className="flex-1 text-green-600 hover:text-green-800 bg-green-100 hover:bg-green-200 px-3 py-2 rounded-md text-xs font-bold transition-colors flex items-center justify-center gap-1 border border-green-600"
                     >
                       <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -224,15 +225,17 @@ const Comments = () => {
                       Approve
                     </button>
                   )}
-                  <button 
-                    onClick={() => handleDelete(comment._id)}
-                                                className="flex-1 text-red-600 hover:text-red-800 bg-red-100 hover:bg-red-200 px-3 py-2 rounded-md text-xs font-bold transition-colors flex items-center justify-center gap-1 border border-red-600"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                    </svg>
-                    Delete
-                  </button>
+                  {canDeleteComment(comment) && (
+                    <button 
+                      onClick={() => handleDelete(comment._id)}
+                      className="flex-1 text-red-600 hover:text-red-800 bg-red-100 hover:bg-red-200 px-3 py-2 rounded-md text-xs font-bold transition-colors flex items-center justify-center gap-1 border border-red-600"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                      </svg>
+                      Delete
+                    </button>
+                  )}
                 </div>
               </div>
             ))
@@ -331,15 +334,17 @@ const Comments = () => {
                             Approve
                           </button>
                         )}
-                        <button 
-                          onClick={() => handleDelete(comment._id)}
-                                                      className="text-red-600 hover:text-red-800 bg-red-100 hover:bg-red-200 px-3 py-1 rounded-md text-xs transition-colors flex items-center gap-1 font-bold border border-red-600"
-                        >
-                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                          </svg>
-                          Delete
-                        </button>
+                        {canDeleteComment(comment) && (
+                          <button 
+                            onClick={() => handleDelete(comment._id)}
+                            className="text-red-600 hover:text-red-800 bg-red-100 hover:bg-red-200 px-3 py-1 rounded-md text-xs transition-colors flex items-center gap-1 font-bold border border-red-600"
+                          >
+                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                            </svg>
+                            Delete
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>

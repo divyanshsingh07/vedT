@@ -13,7 +13,7 @@ const app = express();
 // Middleware
 app.use(cors({
   origin: [
-    'http://13.203.192.187:5173',
+    
     "http://localhost:5173"
   ],
   methods: "GET,POST,PUT,DELETE",

@@ -1,52 +1,10 @@
 import express from 'express';
 import multer from 'multer';
 import { createBlog, getBlogs, getAllBlogs, getBlogById, deleteBlogById, togglePublishedStatus, deleteComment, updateBlog, generateContent } from '../controlers/blogControler.js';
-import jwt from 'jsonwebtoken';
 import { addComment, getBlogComments } from '../controlers/blogControler.js';
 import auth from '../middleware/auth.js';
 
-
 const router = express.Router();
-
-// Authentication middleware
-const authenticateToken = (req, res, next) => {
-    console.log('=== AUTH DEBUG ===');
-    console.log('All headers:', req.headers);
-    
-    // Check for authorization header in different cases
-    const authHeader = req.headers['authorization'] || req.headers['Authorization'] || req.headers['AUTHORIZATION'];
-    console.log('Found auth header:', authHeader);
-    
-    const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
-    
-    console.log('Extracted token:', token);
-    console.log('JWT_SECRET:', process.env.JWT_SECRET);
-    
-    if (!token) {
-        console.log('No token found');
-        return res.json({
-            success: false,
-            message: "Access token is required",
-            debug: {
-                receivedHeaders: Object.keys(req.headers),
-                authHeader: authHeader
-            }
-        });
-    }
-
-    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-        if (err) {
-            console.log('JWT verification error:', err.message);
-            return res.json({
-                success: false,
-                message: "Invalid or expired token"
-            });
-        }
-        console.log('JWT verified successfully, user:', user);
-        req.user = user;
-        next();
-    });
-};
 
 // Configure multer for serverless file uploads (Vercel)
 const upload = multer({ 
@@ -95,22 +53,22 @@ const handleUpload = (uploadMiddleware) => {
 };
 
 // Blog routes
-router.get('/', authenticateToken, getBlogs); 
+router.get('/', auth, getBlogs); 
 router.get('/all', getAllBlogs);
-router.post('/create', authenticateToken, handleUpload(upload.single('image')), createBlog);
-router.post('/add', authenticateToken, handleUpload(upload.single('image')), createBlog);
-router.put('/:blogId', authenticateToken, handleUpload(upload.single('image')), updateBlog); 
+router.post('/create', auth, handleUpload(upload.single('image')), createBlog);
+router.post('/add', auth, handleUpload(upload.single('image')), createBlog);
+router.put('/:blogId', auth, handleUpload(upload.single('image')), updateBlog); 
 router.post('/addComment', addComment); 
 router.delete('/comment/:commentId', auth, deleteComment);
 router.get('/:blogId/comments', getBlogComments);
 router.get('/:blogId', getBlogById); 
-router.delete('/:blogId', authenticateToken, deleteBlogById); 
-router.post('/:id/togglePublish', authenticateToken, togglePublishedStatus); 
-router.post('/togglePublish', authenticateToken, togglePublishedStatus); 
-router.post('/generateContent', authenticateToken, generateContent); 
+router.delete('/:blogId', auth, deleteBlogById); 
+router.post('/:id/togglePublish', auth, togglePublishedStatus); 
+router.post('/togglePublish', auth, togglePublishedStatus); 
+router.post('/generateContent', auth, generateContent); 
 
 // Test endpoint for AI generation (now requires auth)
-router.post('/test-ai', authenticateToken, async (req, res) => {
+router.post('/test-ai', auth, async (req, res) => {
   try {
     const { title, category } = req.body;
     console.log('🧪 Testing AI endpoint with:', { title, category });
@@ -141,7 +99,7 @@ router.post('/test-ai', authenticateToken, async (req, res) => {
 });
 
 // Debug endpoint for testing blog creation (now requires auth)
-router.post('/debug-create', authenticateToken, async (req, res) => {
+router.post('/debug-create', auth, async (req, res) => {
   try {
     console.log('🔍 Debug blog creation test started');
     console.log('Request body:', req.body);

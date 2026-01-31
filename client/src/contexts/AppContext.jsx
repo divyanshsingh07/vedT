@@ -43,7 +43,6 @@ export const AppProvider = ({children}) => {
     const [user, setUser] = useState(null);
     const [blogs, setBlogs] = useState([]);
     const [input, setInput] = useState("");
-    const [loginBlocked, setLoginBlocked] = useState(false);
 
     const fetchBlogs = async () => {
         try {
@@ -160,8 +159,6 @@ export const AppProvider = ({children}) => {
         setInput,
         fetchBlogs,
         fetchAllBlogs,
-        loginBlocked,
-        setLoginBlocked
     };
 
     return(

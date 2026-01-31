@@ -1,262 +1,460 @@
 # Vedified
 
-A modern, full-stack blogging platform with AI-powered content generation, built with React and Node.js.
-
-## 🚀 Features
-
-- **AI-Powered Content Generation**: Generate blog content automatically using Google Gemini AI
-- **Rich Text Editor**: Create and edit blog posts with a powerful TipTap-based editor
-- **Role-Based Access Control**: Separate admin and writer roles with different permissions
-- **Image Management**: Upload and manage images using ImageKit CDN
-- **Blog Publishing**: Draft and publish blog posts with full control
-- **Comments System**: Engage with readers through comments
-- **Search Functionality**: Find blogs quickly with search capabilities
-- **Responsive Design**: Beautiful, modern UI built with Tailwind CSS
-- **Simple Authentication**: Single-user authentication (Firebase optional)
-
-## 🛠️ Tech Stack
-
-### Frontend
-- **React 19** - UI library
-- **Vite** - Build tool and dev server
-- **Tailwind CSS** - Utility-first CSS framework
-- **TipTap** - Rich text editor
-- **React Router** - Client-side routing
-- **Axios** - HTTP client
-- **Firebase** - Authentication
-
-### Backend
-- **Node.js** - Runtime environment
-- **Express.js** - Web framework
-- **MongoDB** - Database (via Mongoose)
-- **JWT** - Authentication tokens
-- **Multer** - File upload handling
-- **ImageKit** - Image CDN and optimization
-- **Google Gemini AI** - Content generation
-- **Firebase Admin SDK** - Server-side authentication
-
-## 📋 Prerequisites
-
-Before you begin, ensure you have the following installed:
-
-- **Node.js** (v20.x or higher)
-- **npm** or **yarn**
-- **MongoDB** (local or cloud instance like MongoDB Atlas)
-- **Firebase Project** (optional, only if using Firebase authentication)
-- **ImageKit Account** (for image storage)
-- **Google Gemini API Key** (for AI content generation)
-
-## 🔧 Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd Vedified
-   ```
-
-2. **Install server dependencies**
-   ```bash
-   cd server
-   npm install
-   ```
-
-3. **Install client dependencies**
-   ```bash
-   cd ../client
-   npm install
-   ```
-
-## ⚙️ Environment Variables
-
-### Server Environment Variables
-
-1. **Copy the example file**
-   ```bash
-   cd server
-   cp .env.example .env
-   ```
-
-2. **Edit the `.env` file** with your actual values:
-
-   **Required for Single User Setup:**
-   - **MONGODB_URI**: Your MongoDB connection string (e.g., `mongodb://localhost:27017` or MongoDB Atlas connection string)
-   - **JWT_SECRET**: A strong random string for JWT token signing
-   - **SINGLE_ALLOWED_EMAIL**: Your email address (only this email will be allowed to login)
-   - **ALLOW_LOCAL_DEV_LOGIN**: Set to `true` (enables login without Firebase)
-   - **IMAGEKIT_PUBLIC_KEY**: Your ImageKit public key
-   - **IMAGEKIT_PRIVATE_KEY**: Your ImageKit private key
-   - **IMAGEKIT_URL_ENDPOINT**: Your ImageKit URL endpoint (e.g., `https://ik.imagekit.io/your_id`)
-   - **GEMINI_API_KEY**: Your Google Gemini API key
-
-   **Note:** Firebase is NOT required for single user setup. Leave Firebase-related variables commented out.
-
-   See `server/.env.example` for the complete list of variables.
-
-### Client Environment Variables
-
-1. **Copy the example file**
-   ```bash
-   cd client
-   cp .env.example .env
-   ```
-
-2. **Edit the `.env` file** with your configuration:
-
-   **For Single User Setup (No Firebase Required):**
-   - **VITE_API_URL**: Your API server URL (use `http://localhost:4000` for local development)
-   - Firebase configuration variables are optional and can be left as defaults
-
-   **Note:** If you're using single user setup without Firebase, you can use the default Firebase config values or leave them as-is.
-
-   See `client/.env.example` for the complete list of variables.
-
-## 🚀 Running the Application
-
-### Development Mode
-
-1. **Start the server**
-   ```bash
-   cd server
-   npm run dev
-   ```
-   The server will run on `http://localhost:4000`
-
-2. **Start the client** (in a new terminal)
-   ```bash
-   cd client
-   npm run dev
-   ```
-   The client will run on `http://localhost:5173`
-
-### Production Mode
-
-1. **Build the client**
-   ```bash
-   cd client
-   npm run build
-   ```
-
-2. **Start the server**
-   ```bash
-   cd server
-   npm start
-   ```
-
-## 📁 Project Structure
-
-```
-Vedified/
-├── client/                 # React frontend application
-│   ├── src/
-│   │   ├── components/    # Reusable React components
-│   │   │   ├── admin/     # Admin-specific components
-│   │   │   └── user/      # User-specific components
-│   │   ├── pages/         # Page components
-│   │   │   ├── admin/     # Admin pages
-│   │   │   └── writer/    # Writer pages
-│   │   ├── contexts/      # React contexts (AppContext)
-│   │   ├── configs/       # Configuration files (Firebase)
-│   │   └── assets/        # Static assets
-│   ├── package.json
-│   └── vite.config.js
-│
-├── server/                # Node.js backend application
-│   ├── configs/          # Configuration files
-│   │   ├── db.js         # MongoDB connection
-│   │   ├── firebaseAdmin.js
-│   │   ├── imagekit.js
-│   │   └── gemini.js
-│   ├── controlers/       # Route controllers
-│   ├── middleware/        # Express middleware
-│   ├── models/           # Mongoose models
-│   ├── routes/           # API routes
-│   ├── server.js         # Main server file
-│   └── package.json
-│
-└── README.md
-```
-
-## 🔌 API Endpoints
-
-### Blog Routes (`/api/blog`)
-
-- `GET /api/blog/all` - Get all published blogs
-- `GET /api/blog/:blogId` - Get a specific blog
-- `POST /api/blog/add` - Create a new blog (requires auth)
-- `POST /api/blog/generateContent` - Generate blog content using AI (requires auth)
-- `PUT /api/blog/:blogId` - Update a blog (requires auth)
-- `DELETE /api/blog/:blogId` - Delete a blog (requires auth)
-- `POST /api/blog/addComment` - Add a comment to a blog
-- `GET /api/blog/:blogId/comments` - Get comments for a blog
-
-### Admin Routes (`/api/admin`)
-
-- `POST /api/admin/firebase-login` - Admin login via Firebase
-- `GET /api/admin/dashboard` - Get dashboard statistics (requires auth)
-- `GET /api/admin/accounts` - Get admin accounts (requires auth)
-
-## 🎨 Key Features Explained
-
-### AI Content Generation
-The platform uses Google Gemini AI to automatically generate blog content based on title, category, and subtitle. If the AI service is unavailable, it falls back to category-specific templates.
-
-### Image Upload
-Images are uploaded using Multer middleware and stored on ImageKit CDN. The system supports images up to 20MB and automatically optimizes them for web delivery.
-
-### Authentication Flow
-
-**Single User Setup (Recommended):**
-1. Set `SINGLE_ALLOWED_EMAIL` in your `.env` file to your email
-2. Set `ALLOW_LOCAL_DEV_LOGIN=true` to enable login without Firebase
-3. Users authenticate via the login form
-4. Server validates credentials and issues a JWT
-5. JWT is used for subsequent API requests
-
-**Firebase Setup (Optional):**
-1. Users authenticate via Firebase on the client
-2. Client receives a Firebase ID token
-3. Server verifies the token and issues a JWT
-4. JWT is used for subsequent API requests
-
-### Role-Based Access
-- **Admin**: Full access to all features including blog management, comments, and user accounts
-- **Writer**: Can create and manage their own blog posts
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-1. **MongoDB Connection Error**
-   - Verify your `MONGODB_URI` is correct
-   - Ensure MongoDB is running (if local) or accessible (if cloud)
-
-2. **Firebase Authentication Error**
-   - Check Firebase configuration in both client and server
-   - Verify service account JSON is properly formatted
-
-3. **Image Upload Fails**
-   - Check ImageKit credentials
-   - Verify file size is under 20MB
-   - Ensure image format is supported (jpg, png, etc.)
-
-4. **AI Content Generation Fails**
-   - Verify `GEMINI_API_KEY` is set correctly
-   - Check API quota limits
-   - System will fallback to template content if AI fails
-
-## 📝 License
-
-This project is licensed under the ISC License.
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## 📧 Contact
-
-For questions or support, please open an issue in the repository.
+A modern, full-stack blogging platform with AI-powered content generation, JWT authentication, and role-based access control. Built with React, Node.js, and MongoDB.
 
 ---
 
-Built with ❤️ using React, Node.js, and modern web technologies.
+## Table of Contents
 
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [Project Architecture](#-project-architecture)
+- [Project Structure](#-project-structure)
+- [Prerequisites](#-prerequisites)
+- [Installation](#-installation)
+- [Environment Variables](#-environment-variables)
+- [Running the Application](#-running-the-application)
+- [Docker Deployment](#-docker-deployment)
+- [API Reference](#-api-reference)
+- [Authentication & Authorization](#-authentication--authorization)
+- [CI/CD Pipeline](#-cicd-pipeline)
+- [Troubleshooting](#-troubleshooting)
+
+---
+
+## Features
+
+| Feature | Description |
+|--------|-------------|
+| **AI Content Generation** | Generate blog content automatically using Google Gemini AI based on title, category, and subtitle |
+| **Rich Text Editor** | TipTap-based WYSIWYG editor with formatting, images, links, and custom styling |
+| **Role-Based Access** | Separate **Admin** and **Writer** roles with different permissions |
+| **Ownership Rules** | Users can only delete/edit their own blogs and comments |
+| **Image Management** | Upload images via Multer, stored and optimized on ImageKit CDN (max 20MB) |
+| **Comments System** | Add, approve, and moderate comments on blog posts |
+| **Responsive UI** | Tailwind CSS with mobile-first design |
+| **JWT Authentication** | Secure login for both admins and writers |
+
+---
+
+## Tech Stack
+
+### Frontend
+
+| Technology | Purpose |
+|------------|---------|
+| **React 19** | UI library for building component-based interfaces |
+| **Vite 7** | Build tool and dev server – fast HMR, optimized production bundles |
+| **Tailwind CSS 4** | Utility-first CSS framework for rapid styling |
+| **TipTap** | Rich text editor (headless ProseMirror) – formatting, images, links, colors |
+| **React Router 7** | Client-side routing for SPA navigation |
+| **Axios** | HTTP client for API requests with interceptors |
+| **React Hot Toast** | Lightweight toast notifications |
+| **Motion** | Animation library for smooth transitions |
+
+### Backend
+
+| Technology | Purpose |
+|------------|---------|
+| **Node.js 20** | JavaScript runtime |
+| **Express 5** | Web framework for REST API |
+| **MongoDB** | NoSQL database (via Mongoose ODM) |
+| **Mongoose 8** | Schema-based data modeling for MongoDB |
+| **JWT (jsonwebtoken)** | Stateless authentication tokens (7-day expiry) |
+| **bcrypt** | Password hashing for secure storage |
+| **Multer** | Multipart/form-data handling for file uploads |
+| **dotenv** | Load environment variables from `.env` |
+| **CORS** | Cross-Origin Resource Sharing configuration |
+| **ImageKit SDK** | Image upload, optimization, and CDN delivery |
+| **Google Gemini AI** | AI-powered blog content generation |
+
+### DevOps & Deployment
+
+| Technology | Purpose |
+|------------|---------|
+| **Docker** | Containerization for consistent deployments |
+| **Docker Compose** | Multi-container orchestration (frontend + backend) |
+| **GitHub Actions** | CI/CD – build, test, deploy to AWS |
+| **PM2** | Process manager for Node.js (production) |
+
+---
+
+## Project Architecture
+
+```
+┌─────────────────┐         ┌─────────────────┐         ┌─────────────────┐
+│     Client      │  HTTP   │     Server      │  TCP    │    MongoDB      │
+│   (React/Vite)  │ ──────► │   (Express)     │ ──────► │   (Database)    │
+│   Port: 5173    │ ◄────── │   Port: 4000    │ ◄────── │   (Cloud/Atlas) │
+└─────────────────┘         └────────┬────────┘         └─────────────────┘
+                                     │
+                                     │ HTTPS
+                                     ▼
+                            ┌─────────────────┐
+                            │   ImageKit CDN  │  (Image storage)
+                            │   Gemini API    │  (AI content)
+                            └─────────────────┘
+```
+
+- **Client**: SPA served by Vite (dev) or static files (prod)
+- **Server**: REST API, JWT auth, file uploads, AI generation
+- **Database**: MongoDB for blogs, users, admins, comments
+
+---
+
+## Project Structure
+
+```
+Vedified/
+├── .github/
+│   └── workflows/
+│       └── cicd.yml              # GitHub Actions CI/CD pipeline
+│
+├── client/                        # React frontend
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── admin/             # Login, Register, Sidebar, AdminAccounts
+│   │   │   ├── user/              # WriterLogin, WriterRegister
+│   │   │   ├── BlogCard.jsx
+│   │   │   ├── BlogList.jsx
+│   │   │   ├── Footer.jsx
+│   │   │   ├── Header.jsx
+│   │   │   └── Navbar.jsx
+│   │   ├── contexts/
+│   │   │   └── AppContext.jsx     # Global state, axios, token, user
+│   │   ├── pages/
+│   │   │   ├── admin/             # Dashboard, AddBlog, BlogList, Comments, Layout
+│   │   │   ├── writer/            # WriterDashboard
+│   │   │   ├── Blog.jsx
+│   │   │   └── Home.jsx
+│   │   ├── assets/
+│   │   ├── index.css
+│   │   ├── main.jsx
+│   │   └── App.jsx
+│   ├── index.html
+│   ├── package.json
+│   ├── vite.config.js
+│   ├── tailwind.config.js
+│   └── Dockerfile
+│
+├── server/                        # Node.js backend
+│   ├── configs/
+│   │   ├── db.js                  # MongoDB connection
+│   │   ├── gemini.js              # Google Gemini AI integration
+│   │   └── imagekit.js            # ImageKit upload config
+│   ├── controlers/
+│   │   ├── admincontrole.js       # Admin login, register, dashboard, comments
+│   │   └── blogControler.js       # Blogs CRUD, comments, AI generation
+│   ├── middleware/
+│   │   └── auth.js                # JWT verification middleware
+│   ├── models/
+│   │   ├── admin.js               # Admin schema (email, hashed password)
+│   │   ├── user.js                # Writer schema (email, password, name)
+│   │   ├── blog.js                # Blog schema
+│   │   └── comments.js            # Comment schema
+│   ├── routes/
+│   │   ├── adminRoutes.js         # /api/admin/* + /api/auth/* (writer)
+│   │   └── blogRouter.js          # /api/blog/*
+│   ├── server.js
+│   ├── package.json
+│   └── Dockerfile
+│
+├── docker-compose.yml             # Local Docker setup (build from source)
+├── docker-prod-compose.yml        # Production Docker (pre-built images)
+└── README.md
+```
+
+---
+
+## Prerequisites
+
+- **Node.js** v20.x or higher
+- **npm** or **yarn**
+- **MongoDB** – local or [MongoDB Atlas](https://www.mongodb.com/atlas)
+- **ImageKit** account – [imagekit.io](https://imagekit.io)
+- **Google AI Studio** – [Gemini API key](https://makersuite.google.com/app/apikey)
+
+---
+
+## Installation
+
+### 1. Clone the repository
+
+```bash
+git clone <repository-url>
+cd Vedified
+```
+
+### 2. Install dependencies
+
+```bash
+# Server
+cd server
+npm install
+
+# Client
+cd ../client
+npm install
+```
+
+### 3. Configure environment
+
+```bash
+# Server – copy example and edit
+cd server
+cp .env.example .env
+# Edit .env with your values
+
+# Client – create .env
+cd ../client
+echo "VITE_API_URL=http://localhost:4000" > .env
+```
+
+---
+
+## Environment Variables
+
+### Server (`server/.env`)
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `PORT` | No | Server port (default: 4000) |
+| `NODE_ENV` | No | `development` or `production` |
+| `MONGODB_URI` | **Yes** | MongoDB connection string (e.g. `mongodb+srv://user:pass@cluster.mongodb.net/dbname`) |
+| `DB_NAME` | No | Database name |
+| `JWT_SECRET` | **Yes** | Strong random string for signing JWTs (min 16 chars) |
+| `ADMIN_EMAIL` | No | Fallback admin email (when no DB admins exist) |
+| `ADMIN_PASSWORD` | No | Fallback admin password |
+| `ADMIN_NAME` | No | Fallback admin display name |
+| `IMAGEKIT_PUBLIC_KEY` | **Yes** | ImageKit public key |
+| `IMAGEKIT_PRIVATE_KEY` | **Yes** | ImageKit private key |
+| `IMAGEKIT_URL_ENDPOINT` | **Yes** | ImageKit URL (e.g. `https://ik.imagekit.io/your_id`) |
+| `GEMINI_API_KEY` | **Yes** | Google Gemini API key for AI content |
+
+### Client (`client/.env`)
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `VITE_API_URL` | **Yes** | Backend API URL – `http://localhost:4000` for local dev |
+
+---
+
+## Running the Application
+
+### Development
+
+```bash
+# Terminal 1 – start backend
+cd server
+npm run dev
+# Server: http://localhost:4000
+
+# Terminal 2 – start frontend
+cd client
+npm run dev
+# Client: http://localhost:5173
+```
+
+### Production
+
+```bash
+# Build client
+cd client
+npm run build
+
+# Start server (serves API; serve client from nginx/CDN separately if needed)
+cd ../server
+npm start
+```
+
+---
+
+## Docker Deployment
+
+### What Docker Does Here
+
+- **Backend container**: Runs Node.js Express server.
+- **Frontend container**: Builds the Vite app and serves static files with `serve`.
+- **MongoDB**: Not in Docker – use MongoDB Atlas or a separate MongoDB container.
+
+### Local Development with Docker
+
+```bash
+# Build and run (from project root)
+docker-compose up --build
+
+# Backend: http://localhost:4000
+# Frontend: http://localhost:5173
+```
+
+`docker-compose.yml`:
+
+- **backend**: Builds from `server/Dockerfile`, uses `server/.env`, exposes 4000.
+- **frontend**: Builds from `client/Dockerfile`, depends on backend, exposes 5173.
+
+### Production with Pre-built Images
+
+```bash
+docker-compose -f docker-prod-compose.yml up -d
+```
+
+Uses pre-built images (`arshthakur/vedified-backend:latest`, `arshthakur/vedified-frontend:latest`) instead of building locally.
+
+### Dockerfiles Explained
+
+**Server (`server/Dockerfile`):**
+
+- Base: `node:20-alpine`
+- Copies `package.json`, runs `npm install`
+- Copies source, sets `NODE_ENV=production`
+- Exposes 4000, runs `npm start`
+
+**Client (`client/Dockerfile`):**
+
+- **Stage 1 (builder)**: Installs deps, runs `npm run build`
+- **Stage 2**: Uses `serve` to serve `dist/` on 5173
+
+---
+
+## API Reference
+
+### Base URL
+
+- Local: `http://localhost:4000`
+- Production: Your deployed server URL
+
+### Auth Routes
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| POST | `/api/admin/login` | No | Admin login (email, password) |
+| POST | `/api/admin/register` | No | Admin registration |
+| POST | `/api/auth/writer-login` | No | Writer login |
+| POST | `/api/auth/writer-register` | No | Writer registration |
+
+### Admin Routes (require `Authorization: Bearer <token>`)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/admin/dashboard` | Dashboard stats (blogs, comments, drafts) |
+| GET | `/api/admin/comments` | All comments |
+| POST | `/api/admin/approveComment/:id` | Approve comment |
+| POST | `/api/admin/deleteComment/:id` | Delete own comment only |
+| GET | `/api/admin/admin-accounts` | List admin accounts |
+| DELETE | `/api/admin/blog/:id` | Delete own blog only |
+
+### User (Writer) Routes
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| GET | `/api/user/dashboard` | Yes | Writer dashboard data |
+
+### Blog Routes
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| GET | `/api/blog/all` | No | All published blogs (public) |
+| GET | `/api/blog/:id` | No | Single blog by ID |
+| GET | `/api/blog/` | Yes | All blogs (filtered by role) |
+| POST | `/api/blog/add` | Yes | Create blog (multipart) |
+| PUT | `/api/blog/:id` | Yes | Update blog |
+| DELETE | `/api/blog/:id` | Yes | Delete own blog only |
+| POST | `/api/blog/:id/togglePublish` | Yes | Toggle publish status |
+| POST | `/api/blog/generateContent` | Yes | AI generate content |
+| POST | `/api/blog/addComment` | No | Add comment |
+| GET | `/api/blog/:id/comments` | No | Get comments |
+| DELETE | `/api/blog/comment/:id` | Yes | Delete own comment only |
+
+### Health
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/` | Basic server message |
+| GET | `/health` | Health check |
+
+---
+
+## Authentication & Authorization
+
+### Flow
+
+1. User submits email + password to `/api/admin/login` or `/api/auth/writer-login`.
+2. Server validates credentials, issues JWT (7-day expiry).
+3. Client stores token in `localStorage` (`adminToken` or `userToken`).
+4. Client sends `Authorization: Bearer <token>` on protected requests.
+5. Server middleware verifies JWT and attaches `req.user` (email, name, role).
+
+### Roles
+
+| Role | Access |
+|------|--------|
+| **Admin** | Admin dashboard, add blog, blog list, comments, admin accounts. Can only delete/edit own blogs and comments. |
+| **Writer** | Writer dashboard, create/edit/delete own blogs. Can only delete own comments. |
+
+### Ownership Rules
+
+- **Blogs**: Delete, update, toggle publish only if `blog.authorEmail === req.user.email`.
+- **Comments**: Delete only if `comment.authorEmail === req.user.email`.
+
+---
+
+## CI/CD Pipeline
+
+Location: `.github/workflows/cicd.yml`
+
+### Triggers
+
+- Push to `main` branch
+
+### Jobs
+
+1. **build-and-test**
+   - Checkout code
+   - Node.js 20
+   - Install server and client deps
+   - Build client (`npm run build`)
+   - Upload `client/dist` as artifact
+
+2. **deploy-frontend**
+   - Download build artifact
+   - Configure AWS credentials
+   - Sync `dist/` to S3 bucket
+
+3. **deploy-backend**
+   - SSH into EC2
+   - Clone/pull repo
+   - `npm install --production` in `server/`
+   - Restart app with PM2 (`vedified-server`)
+
+### Required Secrets
+
+- `AWS_ACCESS_KEY_ID`
+- `AWS_SECRET_ACCESS_KEY`
+- `AWS_REGION`
+- `AWS_S3_BUCKET`
+- `EC2_HOST`
+- `EC2_SSH_KEY`
+
+---
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| **MongoDB connection error** | Check `MONGODB_URI`, network, and Atlas IP whitelist |
+| **JWT errors** | Ensure `JWT_SECRET` is set and same across restarts |
+| **Image upload fails** | Verify ImageKit keys and 20MB limit |
+| **AI generation fails** | Check `GEMINI_API_KEY` and quota |
+| **CORS errors** | Add frontend origin to `server.js` CORS config |
+| **401 on protected routes** | Ensure token is sent as `Authorization: Bearer <token>` |
+| **Docker build fails** | Ensure `.dockerignore` excludes `node_modules`, `.env` as needed |
+
+---
+
+## License
+
+ISC License.
+
+---
+
+Built with React, Node.js, MongoDB, and modern web technologies.

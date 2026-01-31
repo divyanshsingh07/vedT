@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import Home from './pages/Home'
 import Blog from './pages/Blog'
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import { AppProvider, useAppContext } from './contexts/AppContext'
 
 import Layout from './pages/admin/Layout'
@@ -11,12 +11,25 @@ import BlogList from './pages/admin/BlogList'
 import Comments from './pages/admin/Comments'
 import AdminAccounts from './components/admin/AdminAccounts'
 import Login from './components/admin/Login'
+import Register from './components/admin/Register'
 import WriterLogin from './components/user/WriterLogin'
+import WriterRegister from './components/user/WriterRegister'
 import WriterDashboard from './pages/writer/WriterDashboard'
 import {Toaster} from 'react-hot-toast'
 
 const AppRoutes = () => {
-  const { token } = useAppContext();
+  const { token, user } = useAppContext();
+
+  // Only admins can access admin routes; writers get redirected
+  const isAdmin = user?.role === 'admin';
+  const AdminGuard = ({ children }) => {
+    if (!token) return children;
+    // Redirect writers (or when role not yet loaded) to writer dashboard
+    if (!isAdmin) {
+      return <Navigate to="/writer" replace />;
+    }
+    return children;
+  };
   
   return (
     <div>
@@ -28,14 +41,16 @@ const AppRoutes = () => {
         
         {/* Writer Routes */}
         <Route path='writer-login' element={<WriterLogin />} />
+        <Route path='writer-register' element={token ? <Navigate to="/writer" replace /> : <WriterRegister />} />
         <Route path='writer' element={token ? <WriterDashboard /> : <WriterLogin />} />
         
-        {/* Admin Routes */}
+        {/* Admin Routes - only admins can access */}
+        <Route path='admin/register' element={token ? <AdminGuard><Navigate to="/admin" replace /></AdminGuard> : <Register />} />
         <Route 
           path='admin' 
           element={
             token ? (
-              <Layout />
+              <AdminGuard><Layout /></AdminGuard>
             ) : (
               <Login />
             )

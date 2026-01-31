@@ -7,8 +7,8 @@ import { generateBlogContent } from '../configs/gemini.js';
 // Get all blogs
 export const getBlogs = async (req, res) => {
     try {
-        // Return only the current user's blogs when authenticated
-        const authorFilter = req.user?.email ? { authorEmail: req.user.email } : {};
+        // Admins see all blogs; writers see only their own
+        const authorFilter = req.user?.role === 'admin' ? {} : (req.user?.email ? { authorEmail: req.user.email } : {});
         const blogs = await Blog.find(authorFilter).sort({ createdAt: -1 });
         res.json({
             success: true,
@@ -245,9 +245,9 @@ export const deleteBlogById = async (req, res) => {
         if(!blog){
             return res.json({success: false, message: "Blog not found"});
         }
-        // Ownership check
-        if (req.user?.email && blog.authorEmail && blog.authorEmail !== req.user.email) {
-            return res.json({ success: false, message: "Not authorized to delete this blog" });
+        // Everyone (admin and writer) can only delete their own blogs
+        if (!blog.authorEmail || blog.authorEmail !== req.user?.email) {
+            return res.status(403).json({ success: false, message: "Not authorized to delete this blog" });
         }
         await Blog.findByIdAndDelete(blogId);
         //delete comments associated with the blog
@@ -276,9 +276,9 @@ export const togglePublishedStatus = async (req, res) => {
         if (!blog) {
             return res.json({success: false, message: "Blog not found"});
         }
-        // Ownership check
-        if (req.user?.email && blog.authorEmail && blog.authorEmail !== req.user.email) {
-            return res.json({ success: false, message: "Not authorized to update this blog" });
+        // Everyone (admin and writer) can only update their own blogs
+        if (!blog.authorEmail || blog.authorEmail !== req.user?.email) {
+            return res.status(403).json({ success: false, message: "Not authorized to update this blog" });
         }
         blog.isPublished = !blog.isPublished;
         await blog.save();
@@ -337,9 +337,9 @@ export const updateBlog = async (req, res) => {
         if (!existingBlog) {
             return res.json({ success: false, message: "Blog not found" });
         }
-        // Ownership check
-        if (req.user?.email && existingBlog.authorEmail && existingBlog.authorEmail !== req.user.email) {
-            return res.json({ success: false, message: "Not authorized to update this blog" });
+        // Everyone (admin and writer) can only update their own blogs
+        if (!existingBlog.authorEmail || existingBlog.authorEmail !== req.user?.email) {
+            return res.status(403).json({ success: false, message: "Not authorized to update this blog" });
         }
         
         // Update basic fields
@@ -441,19 +441,12 @@ export const deleteComment = async (req, res) => {
             return res.json({ success: false, message: "Comment not found" });
         }
 
-        // Authorization: only commenter or admin can delete
-        const blog = await Blog.findById(comment.blog);
-        if (!blog) {
-            return res.json({ success: false, message: "Parent blog not found" });
-        }
-
+        // Authorization: only the comment author can delete their own comment
         const requesterEmail = req.user?.email;
-        const requesterRole = req.user?.role;
-        const isAdmin = requesterRole === 'admin';
-        const isCommentAuthor = requesterEmail && comment.authorEmail && comment.authorEmail === requesterEmail;
+        const isCommentAuthor = requesterEmail && comment.authorEmail && comment.authorEmail.toLowerCase() === requesterEmail.toLowerCase();
 
-        if (!requesterEmail || (!isAdmin && !isCommentAuthor)) {
-            return res.json({ success: false, message: "Not authorized to delete this comment" });
+        if (!isCommentAuthor) {
+            return res.status(403).json({ success: false, message: "Not authorized to delete this comment" });
         }
 
         await Comment.findByIdAndDelete(commentId);

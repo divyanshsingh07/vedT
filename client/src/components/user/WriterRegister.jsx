@@ -3,29 +3,29 @@ import { useNavigate, Link } from 'react-router-dom'
 import { useAppContext } from '../../contexts/AppContext'
 import toast from 'react-hot-toast'
 
-const WriterLogin = () => {
+const WriterRegister = () => {
   const { axios, setToken } = useAppContext()
-  const [credentials, setCredentials] = useState({ email: '', password: '' })
+  const [form, setForm] = useState({ email: '', password: '', name: '' })
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
 
-  const handleLogin = async (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault()
     setIsLoading(true)
     try {
-      const { data } = await axios.post('/api/auth/writer-login', credentials)
+      const { data } = await axios.post('/api/auth/writer-register', form)
       if (data.success) {
         setToken(data.token)
         localStorage.setItem('userToken', data.token)
         axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`
-        toast.success(`Welcome, ${data.user.name || data.user.email}!`)
+        toast.success('Account created! Welcome.')
         navigate('/writer')
       } else {
         toast.error(data.message)
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Login failed. Please try again.')
+      toast.error(error.response?.data?.message || 'Registration failed.')
     } finally {
       setIsLoading(false)
     }
@@ -34,29 +34,40 @@ const WriterLogin = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-amber-50 p-4">
       <div className="relative bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md border-4 border-black">
-        <h1 className="text-2xl font-black text-center mb-6 text-black">Writer Login</h1>
-        <form onSubmit={handleLogin} className="space-y-4">
+        <h1 className="text-2xl font-black text-center mb-6 text-black">Create Writer Account</h1>
+        <form onSubmit={handleRegister} className="space-y-4">
+          <div>
+            <label className="block text-sm font-bold text-black mb-1">Name</label>
+            <input
+              type="text"
+              value={form.name}
+              onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
+              className="w-full px-4 py-3 border-2 border-black rounded-xl focus:outline-none focus:ring-2 focus:ring-black"
+              placeholder="Your name"
+            />
+          </div>
           <div>
             <label className="block text-sm font-bold text-black mb-1">Email</label>
             <input
               type="email"
-              value={credentials.email}
-              onChange={(e) => setCredentials((p) => ({ ...p, email: e.target.value }))}
+              value={form.email}
+              onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))}
               className="w-full px-4 py-3 border-2 border-black rounded-xl focus:outline-none focus:ring-2 focus:ring-black"
               placeholder="writer@example.com"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-bold text-black mb-1">Password</label>
+            <label className="block text-sm font-bold text-black mb-1">Password (min 6 chars)</label>
             <div className="relative">
               <input
                 type={showPassword ? 'text' : 'password'}
-                value={credentials.password}
-                onChange={(e) => setCredentials((p) => ({ ...p, password: e.target.value }))}
+                value={form.password}
+                onChange={(e) => setForm((p) => ({ ...p, password: e.target.value }))}
                 className="w-full px-4 py-3 pr-12 border-2 border-black rounded-xl focus:outline-none focus:ring-2 focus:ring-black"
                 placeholder="••••••••"
                 required
+                minLength={6}
               />
               <button
                 type="button"
@@ -80,13 +91,13 @@ const WriterLogin = () => {
             disabled={isLoading}
             className="w-full bg-black text-white py-3 px-4 rounded-xl hover:bg-gray-800 font-bold uppercase tracking-wide disabled:opacity-50"
           >
-            {isLoading ? 'Signing in...' : 'Sign In'}
+            {isLoading ? 'Creating...' : 'Create Account'}
           </button>
         </form>
         <p className="mt-4 text-center text-sm text-gray-700">
-          Don&apos;t have an account?{' '}
-          <Link to="/writer-register" className="font-bold text-black hover:underline">
-            Create account
+          Already have an account?{' '}
+          <Link to="/writer-login" className="font-bold text-black hover:underline">
+            Sign in
           </Link>
         </p>
       </div>
@@ -94,4 +105,4 @@ const WriterLogin = () => {
   )
 }
 
-export default WriterLogin
+export default WriterRegister

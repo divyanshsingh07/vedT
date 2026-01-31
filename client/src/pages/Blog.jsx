@@ -94,10 +94,8 @@ const Blog = () => {
   };
 
   const canDeleteComment = (comment) => {
-    if (!user) return false;
-    const isAdmin = user.role === 'admin';
-    const isCommentAuthor = user.email && comment?.authorEmail && user.email === comment.authorEmail;
-    return isAdmin || isCommentAuthor;
+    if (!user?.email) return false;
+    return comment?.authorEmail && comment.authorEmail.toLowerCase() === user.email.toLowerCase();
   };
 
   if (!id) return <><Navbar /><p>Blog list here...</p></>;

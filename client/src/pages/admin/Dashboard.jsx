@@ -5,8 +5,9 @@ import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
 
 const Dashboard = () => {
-  const { axios } = useAppContext()
+  const { axios, user } = useAppContext()
   const navigate = useNavigate()
+  const canEditBlog = (blog) => blog.authorEmail && user?.email && blog.authorEmail.toLowerCase() === user.email.toLowerCase()
   const [dashboardData, setDashboardData] = useState({
     recentBlogs: [],
     blogCount: 0,
@@ -291,6 +292,7 @@ const Dashboard = () => {
                   <p className="text-sm font-bold text-black mb-2">{blog.title}</p>
                 </div>
                 
+                {canEditBlog(blog) && (
                 <div className="flex gap-2">
                   <button 
                     className="flex-1 text-gray-800 hover:text-black bg-amber-100 hover:bg-amber-200 px-3 py-2 rounded-md text-xs font-bold transition-colors border border-black"
@@ -305,6 +307,7 @@ const Dashboard = () => {
                     <img src={assets.bin_icon} alt="delete" className="w-4 h-5" />
                   </button>
                 </div>
+                )}
               </div>
             ))
           )}
@@ -352,19 +355,25 @@ const Dashboard = () => {
                         {blog.isPublished ? 'Published' : 'Draft'}
                       </span>
                     </td>
-                    <td className=" cursor-pointer px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                      <button 
-                        className="text-gray-800 hover:text-black bg-amber-100 hover:bg-amber-200 px-3 py-1 rounded-md text-xs transition-colors font-bold border border-black"
-                        onClick={() => handleToggleStatus(blog._id)}
-                      >
-                        {blog.isPublished ? 'Unpublish' : 'Publish'}
-                      </button>
-                      <button 
-                        className="text-red-600 hover:text-red-800 bg-red-100 hover:bg-red-200 w-8 h-8 rounded-full flex items-center justify-center transition-colors border border-red-600"
-                        onClick={() => handleDelete(blog._id)}
-                      >
-                        <img src={assets.bin_icon} alt="delete" className="w-4 h-5 cursor-pointer" />
-                      </button>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                      {canEditBlog(blog) ? (
+                        <>
+                          <button 
+                            className="text-gray-800 hover:text-black bg-amber-100 hover:bg-amber-200 px-3 py-1 rounded-md text-xs transition-colors font-bold border border-black cursor-pointer"
+                            onClick={() => handleToggleStatus(blog._id)}
+                          >
+                            {blog.isPublished ? 'Unpublish' : 'Publish'}
+                          </button>
+                          <button 
+                            className="text-red-600 hover:text-red-800 bg-red-100 hover:bg-red-200 w-8 h-8 rounded-full flex items-center justify-center transition-colors border border-red-600 cursor-pointer"
+                            onClick={() => handleDelete(blog._id)}
+                          >
+                            <img src={assets.bin_icon} alt="delete" className="w-4 h-5" />
+                          </button>
+                        </>
+                      ) : (
+                        <span className="text-gray-500 text-xs">—</span>
+                      )}
                     </td>
                   </tr>
                 ))
