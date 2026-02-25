@@ -13,8 +13,8 @@ const app = express();
 // Middleware
 app.use(cors({
   origin: [
-    
-    "http://localhost:5173"
+    "http://localhost:5173",
+    "https://vedt.onrender.com"
   ],
   methods: "GET,POST,PUT,DELETE",
   credentials: true

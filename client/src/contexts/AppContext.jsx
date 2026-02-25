@@ -9,23 +9,9 @@ const API_URL = import.meta.env.VITE_API_URL ||
 
 axios.defaults.baseURL = API_URL;
 
-// Add request interceptor for debugging
-axios.interceptors.request.use(
-    (config) => {
-        console.log(`Making API request to: ${config.baseURL}${config.url}`);
-        return config;
-    },
-    (error) => {
-        console.error('Request interceptor error:', error);
-        return Promise.reject(error);
-    }
-);
-
-// Add response interceptor for better error handling
 axios.interceptors.response.use(
     (response) => response,
     (error) => {
-        console.error('API Error:', error);
         if (error.code === 'NETWORK_ERROR' || !error.response) {
             toast.error('Network Error: Unable to connect to server. Please check your connection.');
         } else if (error.response?.status >= 500) {
@@ -76,32 +62,26 @@ export const AppProvider = ({children}) => {
 
     // Validate token and set axios headers
     const validateAndSetToken = (tokenValue) => {
-        console.log('🔑 Setting token:', tokenValue ? 'Token received' : 'No token');
         if (tokenValue) {
             setToken(tokenValue);
             axios.defaults.headers.common["Authorization"] = `Bearer ${tokenValue}`;
-            console.log('✅ Token set successfully');
 
-            // Try to decode JWT for user info (name, email, role)
             try {
                 const payloadBase64 = tokenValue.split('.')[1];
                 if (payloadBase64) {
                     const payloadJson = JSON.parse(atob(payloadBase64));
-                    const decodedUser = {
+                    setUser({
                         name: payloadJson.name || null,
                         email: payloadJson.email || null,
                         role: payloadJson.role || null,
-                    };
-                    setUser(decodedUser);
+                    });
                 }
             } catch (e) {
-                console.log('JWT decode failed (non-fatal):', e?.message);
                 setUser(null);
             }
         } else {
             setToken(null);
             delete axios.defaults.headers.common["Authorization"];
-            console.log('❌ Token cleared');
             setUser(null);
         }
     };
@@ -115,34 +95,21 @@ export const AppProvider = ({children}) => {
         const userToken = localStorage.getItem("userToken");
         const activeToken = adminToken || userToken;
         
-        console.log('🔍 Checking localStorage for tokens:', {
-            adminToken: adminToken ? 'Found' : 'Not found',
-            userToken: userToken ? 'Found' : 'Not found',
-            activeToken: activeToken ? 'Found' : 'Not found'
-        });
-        
         if (activeToken) {
-            // Validate token by making a test request
             validateAndSetToken(activeToken);
             
-            // Test token validity with appropriate endpoint
             const testEndpoint = adminToken ? "/api/admin/dashboard" : "/api/user/dashboard";
             axios.get(testEndpoint)
                 .then(() => {
-                    // Token is valid, keep it
-                    console.log('✅ Token validation successful');
                     validateAndSetToken(activeToken);
                 })
-                .catch((error) => {
-                    // Token is invalid, remove it
-                    console.log('❌ Token validation failed:', error.response?.status);
+                .catch(() => {
                     localStorage.removeItem("adminToken");
                     localStorage.removeItem("userToken");
                     validateAndSetToken(null);
                     toast.error("Session expired. Please login again.");
                 });
         } else {
-            console.log('ℹ️ No tokens found in localStorage');
             validateAndSetToken(null);
         }
     }, []);
