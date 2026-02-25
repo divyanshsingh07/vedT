@@ -81,39 +81,56 @@ function BlogList() {
     if (sortBy === 'Oldest') {
       return list.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
     }
-    // Popular (fallback): sort by description length as a proxy
     return list.sort((a, b) => (b?.description?.length || 0) - (a?.description?.length || 0));
   }, [filteredBlogs, sortBy]);
 
   return (
-    <div className="px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 bg-amber-50 py-8">
-      {/* Controls: Categories + Sorting */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 my-6">
+    <div
+      id="blog-list-section"
+      className="px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 py-10 max-w-6xl mx-auto"
+    >
+      <div className="mb-6 sm:mb-8">
+        <p className="text-[11px] sm:text-xs font-semibold uppercase tracking-[0.24em] text-muted">
+          Browse
+        </p>
+        <h2 className="mt-1 text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-heading">
+          Latest posts from the community
+        </h2>
+        <p className="mt-2 text-sm sm:text-base text-muted font-medium max-w-2xl">
+          Filter by category, sort by date, and dive into stories across technology, lifestyle,
+          finance, and more.
+        </p>
+      </div>
+
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 my-4 sm:my-6">
         <div className="flex flex-wrap justify-center md:justify-start gap-2">
           {blogCategories.map((item) => (
             <button
               key={item}
               onClick={() => setMenu(item)}
-              className={`inline-flex items-center gap-2 px-3 py-2 rounded-full border-2 ${menu === item ? 'border-black text-white bg-black shadow-lg' : 'border-black text-black bg-amber-100 hover:bg-amber-200'} transition-all hover:shadow hover:scale-[1.02] font-bold uppercase tracking-wide text-sm`}
+              className={`inline-flex items-center gap-2 px-3 py-2 rounded-full border ${
+                menu === item
+                  ? 'border-accent text-white bg-accent shadow-md'
+                  : 'border-border text-heading bg-white hover:bg-accent-soft hover:border-accent/30 hover:shadow-sm'
+              } transition-all hover:-translate-y-0.5 font-semibold text-[11px] sm:text-xs`}
             >
               <span className='text-current'>{categoryIcon(item)}</span>
-              <span className='text-sm font-bold'>{item}</span>
+              <span className='text-sm font-semibold'>{item}</span>
             </button>
           ))}
         </div>
 
-        {/* Sorting Dropdown */}
         <div className="relative">
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className='appearance-none text-sm font-bold rounded-xl border-2 border-black bg-white px-3 py-2 pr-8 shadow-lg focus:outline-none focus:ring-2 focus:ring-black uppercase tracking-wide'
+            className='appearance-none text-[11px] sm:text-xs font-semibold rounded-full border border-border bg-white px-3 py-2 pr-8 shadow-sm focus:outline-none focus:ring-2 focus:ring-accent text-heading'
           >
             <option>Newest</option>
             <option>Oldest</option>
             <option>Popular</option>
           </select>
-          <span className='pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-black'>
+          <span className='pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-muted'>
             <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
               <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 9l-7 7-7-7' />
             </svg>
@@ -121,8 +138,7 @@ function BlogList() {
         </div>
       </div>
 
-      {/* Blog Cards Section */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6 lg:gap-8 xl:gap-10 mb-12 sm:mb-16 lg:mb-20 xl:mb-24">
+      <div className="mt-6 sm:mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 mb-12 sm:mb-16 lg:mb-20">
         {sortedBlogs
           .filter((blog) => menu === "All" ? true : blog.category === menu)
           .map((blog) => (

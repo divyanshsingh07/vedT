@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAppContext } from '../../contexts/AppContext'
+import { assets } from '../../assets/assets'
 import toast from 'react-hot-toast'
 
 const WriterRegister = () => {
@@ -32,39 +33,55 @@ const WriterRegister = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-amber-50 p-4">
-      <div className="relative bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md border-4 border-black">
-        <h1 className="text-2xl font-black text-center mb-6 text-black">Create Writer Account</h1>
-        <form onSubmit={handleRegister} className="space-y-4">
+    <div className="relative min-h-screen flex items-center justify-center bg-page px-4 py-8">
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-96 h-96 bg-accent/5 rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-slate-400/5 rounded-full blur-3xl" />
+      </div>
+
+      <div className="relative bg-white p-6 sm:p-8 rounded-2xl shadow-lg w-full max-w-md border border-border">
+        <div className="text-center mb-6 sm:mb-8">
+          <div className="mx-auto w-16 h-16 sm:w-20 sm:h-20 bg-navy rounded-2xl flex items-center justify-center mb-4 shadow-lg">
+            <img src={assets.logo} alt="Writer" className="w-10 h-10 sm:w-12 sm:h-12 object-contain filter brightness-0 invert" />
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-heading mb-1">Create Writer Account</h1>
+          <p className="text-muted text-xs sm:text-sm font-medium">
+            Start publishing your own stories and articles
+          </p>
+        </div>
+
+        <form onSubmit={handleRegister} className="space-y-4 sm:space-y-5">
           <div>
-            <label className="block text-sm font-bold text-black mb-1">Name</label>
+            <label className="block text-xs sm:text-sm font-semibold text-heading mb-1.5">Name</label>
             <input
               type="text"
               value={form.name}
               onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
-              className="w-full px-4 py-3 border-2 border-black rounded-xl focus:outline-none focus:ring-2 focus:ring-black"
+              className="w-full px-4 py-3 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-accent bg-white font-medium text-heading"
               placeholder="Your name"
             />
           </div>
           <div>
-            <label className="block text-sm font-bold text-black mb-1">Email</label>
+            <label className="block text-xs sm:text-sm font-semibold text-heading mb-1.5">Email</label>
             <input
               type="email"
               value={form.email}
               onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))}
-              className="w-full px-4 py-3 border-2 border-black rounded-xl focus:outline-none focus:ring-2 focus:ring-black"
+              className="w-full px-4 py-3 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-accent bg-white font-medium text-heading"
               placeholder="writer@example.com"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-bold text-black mb-1">Password (min 6 chars)</label>
+            <label className="block text-xs sm:text-sm font-semibold text-heading mb-1.5">
+              Password (min 6 chars)
+            </label>
             <div className="relative">
               <input
                 type={showPassword ? 'text' : 'password'}
                 value={form.password}
                 onChange={(e) => setForm((p) => ({ ...p, password: e.target.value }))}
-                className="w-full px-4 py-3 pr-12 border-2 border-black rounded-xl focus:outline-none focus:ring-2 focus:ring-black"
+                className="w-full px-4 py-3 pr-12 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-accent bg-white font-medium text-heading"
                 placeholder="••••••••"
                 required
                 minLength={6}
@@ -72,7 +89,7 @@ const WriterRegister = () => {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-black hover:text-gray-600"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-heading"
               >
                 {showPassword ? (
                   <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -80,7 +97,8 @@ const WriterRegister = () => {
                   </svg>
                 ) : (
                   <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                   </svg>
                 )}
               </button>
@@ -89,14 +107,15 @@ const WriterRegister = () => {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-black text-white py-3 px-4 rounded-xl hover:bg-gray-800 font-bold uppercase tracking-wide disabled:opacity-50"
+            className="w-full bg-accent text-white py-3 px-4 rounded-xl hover:bg-accent-hover font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all"
           >
             {isLoading ? 'Creating...' : 'Create Account'}
           </button>
         </form>
-        <p className="mt-4 text-center text-sm text-gray-700">
+
+        <p className="mt-4 text-center text-xs sm:text-sm text-muted">
           Already have an account?{' '}
-          <Link to="/writer-login" className="font-bold text-black hover:underline">
+          <Link to="/writer-login" className="font-semibold text-accent hover:text-accent-hover hover:underline">
             Sign in
           </Link>
         </p>

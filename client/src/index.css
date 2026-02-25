@@ -2,7 +2,7 @@
 @import "tailwindcss";
 
 * {
-  font-family: "Lora", serif;
+  font-family: "Outfit", sans-serif;
 }
 
 html, body, #root {
@@ -10,11 +10,7 @@ html, body, #root {
 }
 
 body {
-  background-color: #c7c7c7; /* light newspaper gray */
-  background-image: 
-    linear-gradient(90deg, rgba(0,0,0,0.02) 1px, transparent 1px),
-    linear-gradient(rgba(0,0,0,0.02) 1px, transparent 1px);
-  background-size: 20px 20px; /* subtle grid pattern like newspaper */
+  background-color: #F8FAFC;
 }
 
 ::-webkit-scrollbar {
@@ -22,28 +18,34 @@ body {
 }
 
 @theme {
-  --color-primary: #F97316;   /* Orange 500 */
-  --color-secondary: #EC4899; /* Pink 500 */
-  --color-accent: #3B82F6;    /* Blue 500 (contrast) */
-  --color-text: #111827;      /* Charcoal text */
+  --color-navy: #0F172A;
+  --color-navy-light: #1E293B;
+  --color-accent: #6366F1;
+  --color-accent-hover: #4F46E5;
+  --color-accent-soft: #EEF2FF;
+  --color-surface: #FFFFFF;
+  --color-page: #F8FAFC;
+  --color-heading: #0B1120;
+  --color-muted: #64748B;
+  --color-border: #E2E8F0;
 }
 
 /* Rich text styling */
-.rich-text { font-size: 15px; }
+.rich-text { font-size: 15px; font-family: "Lora", serif; }
 
-.rich-text p { margin-bottom: 16px; color: #292929; }
+.rich-text p { margin-bottom: 16px; color: #334155; }
 
-.rich-text h1 { font-size: 36px; font-weight: 700; color: #111827 !important; margin: 32px 0; }
+.rich-text h1 { font-size: 36px; font-weight: 700; color: #0B1120 !important; margin: 32px 0; }
 
-.rich-text h2 { font-size: 22px; font-weight: 700; color: #1f2937 !important; margin: 24px 0; }
+.rich-text h2 { font-size: 22px; font-weight: 700; color: #0F172A !important; margin: 24px 0; }
 
-.rich-text h3 { font-size: 18px; font-weight: 600; color: #374151 !important; margin: 20px 0; }
+.rich-text h3 { font-size: 18px; font-weight: 600; color: #1E293B !important; margin: 20px 0; }
 
-.rich-text h4 { font-size: 16px; font-weight: 500; color: #4b5563 !important; margin: 16px 0; }
+.rich-text h4 { font-size: 16px; font-weight: 500; color: #334155 !important; margin: 16px 0; }
 
-.rich-text h5 { font-size: 14px; font-weight: 400; color: #6b7280 !important; margin: 12px 0; }
+.rich-text h5 { font-size: 14px; font-weight: 400; color: #64748B !important; margin: 12px 0; }
 
-.rich-text h6 { font-size: 12px; font-weight: 400; color: #9ca3af !important; margin: 8px 0; }
+.rich-text h6 { font-size: 12px; font-weight: 400; color: #94A3B8 !important; margin: 8px 0; }
 
 .rich-text strong { font-weight: 700; }
 
@@ -53,7 +55,7 @@ body {
 
 .rich-text li { margin-bottom: 8px; }
 
-.rich-text a { color: var(--color-accent); text-decoration: underline; }
+.rich-text a { color: #6366F1; text-decoration: underline; }
 
 /* TipTap Editor */
 .ProseMirror {
@@ -61,27 +63,27 @@ body {
   min-height: 300px;
   padding: 1rem;
   font-family: "Lora", serif;
-  line-height: 1.6;
+  line-height: 1.8;
 }
 
-.ProseMirror p { margin-bottom: 1rem; color: #292929; }
+.ProseMirror p { margin-bottom: 1rem; color: #334155; }
 
-.ProseMirror h1 { font-size: 2rem; font-weight: 700; color: #111827; margin: 1.5rem 0 1rem; }
+.ProseMirror h1 { font-size: 2rem; font-weight: 700; color: #0B1120; margin: 1.5rem 0 1rem; }
 
-.ProseMirror h2 { font-size: 1.5rem; font-weight: 700; color: #1f2937; margin: 1.25rem 0 0.75rem; }
+.ProseMirror h2 { font-size: 1.5rem; font-weight: 700; color: #0F172A; margin: 1.25rem 0 0.75rem; }
 
-.ProseMirror h3 { font-size: 1.25rem; font-weight: 600; color: #374151; margin: 1rem 0 0.5rem; }
+.ProseMirror h3 { font-size: 1.25rem; font-weight: 600; color: #1E293B; margin: 1rem 0 0.5rem; }
 
 .ProseMirror ul, .ProseMirror ol { margin: 1rem 0; padding-left: 2rem; }
 
 .ProseMirror li { margin-bottom: 0.5rem; }
 
 .ProseMirror blockquote {
-  border-left: 4px solid #fda4af; /* soft pink border */
+  border-left: 4px solid #6366F1;
   margin: 1rem 0;
   padding-left: 1rem;
   font-style: italic;
-  color: #9ca3af;
+  color: #64748B;
 }
 
 .ProseMirror strong { font-weight: 700; }
@@ -91,20 +93,20 @@ body {
 .ProseMirror u { text-decoration: underline; }
 
 .ProseMirror a {
-  color: var(--color-accent);
+  color: #6366F1;
   text-decoration: underline;
 }
 
-.ProseMirror a:hover { color: #1d4ed8; }
+.ProseMirror a:hover { color: #4F46E5; }
 
 /* Placeholder text */
 .ProseMirror p.is-editor-empty:first-child::before {
   content: attr(data-placeholder);
   float: left;
-  color: #9ca3af;
+  color: #94A3B8;
   pointer-events: none;
   height: 0;
 }
 
 /* Selection */
-.ProseMirror ::selection { background: #fde68a; /* warm yellow highlight */ }
+.ProseMirror ::selection { background: #C7D2FE; }

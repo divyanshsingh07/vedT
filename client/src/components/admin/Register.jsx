@@ -33,51 +33,51 @@ const Register = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-amber-50 p-4">
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-black/5 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-gray-800/5 rounded-full blur-3xl"></div>
+    <div className="relative min-h-screen flex items-center justify-center bg-page px-4 py-8">
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-96 h-96 bg-accent/5 rounded-full blur-3xl"></div>
+        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-slate-400/5 rounded-full blur-3xl"></div>
       </div>
 
-      <div className="relative bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md border-4 border-black">
-        <div className="text-center mb-8">
-          <div className="mx-auto w-20 h-20 bg-black rounded-2xl flex items-center justify-center mb-4 shadow-lg border-2 border-black">
-            <img src={assets.logo} alt="Vedified" className="w-12 h-12 object-contain filter brightness-0 invert" />
+      <div className="relative bg-white p-6 sm:p-8 rounded-2xl shadow-lg w-full max-w-md border border-border">
+        <div className="text-center mb-6 sm:mb-8">
+          <div className="mx-auto w-16 h-16 sm:w-20 sm:h-20 bg-navy rounded-2xl flex items-center justify-center mb-4 shadow-lg">
+            <img src={assets.logo} alt="Blog Admin" className="w-12 h-12 object-contain filter brightness-0 invert" />
           </div>
-          <h1 className="text-3xl font-black text-black mb-2">Create Account</h1>
-          <p className="text-gray-800 text-sm font-semibold">Register for admin access</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-heading mb-1">Create Account</h1>
+          <p className="text-muted text-xs sm:text-sm font-medium">Register for admin access</p>
         </div>
 
         <form onSubmit={handleRegister} className="space-y-6">
           <div className="space-y-2">
-            <label className="block text-sm font-bold text-black">Name</label>
+            <label className="block text-xs sm:text-sm font-semibold text-heading">Name</label>
             <input
               type="text"
               value={form.name}
               onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
-              className="w-full px-4 py-3 border-2 border-black rounded-xl focus:outline-none focus:ring-2 focus:ring-black bg-white font-semibold"
+              className="w-full px-4 py-3 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-accent bg-white font-medium text-heading"
               placeholder="Your name"
             />
           </div>
           <div className="space-y-2">
-            <label className="block text-sm font-bold text-black">Email</label>
+            <label className="block text-xs sm:text-sm font-semibold text-heading">Email</label>
             <input
               type="email"
               value={form.email}
               onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))}
-              className="w-full px-4 py-3 border-2 border-black rounded-xl focus:outline-none focus:ring-2 focus:ring-black bg-white font-semibold"
+              className="w-full px-4 py-3 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-accent bg-white font-medium text-heading"
               placeholder="admin@example.com"
               required
             />
           </div>
           <div className="space-y-2">
-            <label className="block text-sm font-bold text-black">Password</label>
+            <label className="block text-xs sm:text-sm font-semibold text-heading">Password</label>
             <div className="relative">
               <input
                 type={showPassword ? 'text' : 'password'}
                 value={form.password}
                 onChange={(e) => setForm((p) => ({ ...p, password: e.target.value }))}
-                className="w-full pl-4 pr-12 py-3 border-2 border-black rounded-xl focus:outline-none focus:ring-2 focus:ring-black bg-white font-semibold"
+                className="w-full pl-4 pr-12 py-3 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-accent bg-white font-medium text-heading"
                 placeholder="At least 6 characters"
                 required
                 minLength={6}
@@ -85,7 +85,7 @@ const Register = () => {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-black hover:text-gray-800"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-heading"
               >
                 {showPassword ? (
                   <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -103,7 +103,7 @@ const Register = () => {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-black text-white py-3 px-4 rounded-xl hover:bg-gray-800 font-bold uppercase tracking-wide border-2 border-black disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-accent text-white py-3 px-4 rounded-xl hover:bg-accent-hover font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all"
           >
             {isLoading ? (
               <div className="flex justify-center">
@@ -115,9 +115,9 @@ const Register = () => {
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-gray-700">
+        <p className="mt-5 text-center text-xs sm:text-sm text-muted">
           Already have an account?{' '}
-          <Link to="/admin" className="font-bold text-black hover:underline">
+          <Link to="/admin" className="font-semibold text-accent hover:text-accent-hover hover:underline">
             Sign in
           </Link>
         </p>

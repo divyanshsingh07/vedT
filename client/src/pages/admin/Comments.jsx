@@ -103,14 +103,14 @@ const Comments = () => {
   }
 
   return (
-    <div className="flex-1 space-y-6 p-4 sm:p-6 overflow-x-hidden bg-gray-100">
+    <div className="flex-1 space-y-6 p-4 sm:p-6 overflow-x-hidden bg-page">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-xl sm:text-2xl font-black text-black">Comments Management</h1>
+        <h1 className="text-xl sm:text-2xl font-bold text-heading">Comments Management</h1>
         <div className="mt-4 sm:mt-0 flex items-center gap-3">
-          <div className="flex items-center gap-4 text-sm text-gray-800 font-semibold">
+          <div className="flex items-center gap-4 text-sm text-muted font-semibold">
             <span className="flex items-center gap-1">
-              <span className="w-2 h-2 bg-black rounded-full"></span>
+              <span className="w-2 h-2 bg-accent rounded-full"></span>
               Total: {comments.length}
             </span>
             <span className="flex items-center gap-1">
@@ -125,7 +125,7 @@ const Comments = () => {
           <button
             onClick={fetchComments}
             disabled={loading}
-            className="bg-black text-white px-3 py-2 rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 text-sm font-bold uppercase tracking-wide border-2 border-black"
+            className="bg-accent text-white px-3 py-2 rounded-lg hover:bg-accent-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 text-sm font-semibold"
           >
             {loading ? (
               <>
@@ -145,13 +145,13 @@ const Comments = () => {
       </div>
 
       {/* Filters */}
-      <div className="bg-white p-4 rounded-lg shadow-lg border-2 border-black">
+      <div className="bg-white p-4 rounded-lg shadow-lg border border-border">
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
     <div>
             <select
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
-              className="w-full sm:w-auto px-3 py-2 border-2 border-black rounded-md focus:outline-none focus:ring-2 focus:ring-black text-sm sm:text-base font-semibold"
+              className="w-full sm:w-auto px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-accent text-sm sm:text-base font-semibold"
             >
               <option value="all">All Comments</option>
               <option value="approved">Approved</option>
@@ -162,19 +162,19 @@ const Comments = () => {
       </div>
 
       {/* Comments List */}
-      <div className="bg-white rounded-lg shadow-lg border-2 border-black overflow-hidden">
+      <div className="bg-white rounded-lg shadow-lg border border-border overflow-hidden">
         {/* Mobile Card View */}
         <div className="block lg:hidden">
           {loading ? (
-            <div className="p-4 text-center text-gray-800 font-semibold">Loading comments...</div>
+            <div className="p-4 text-center text-muted font-semibold">Loading comments...</div>
           ) : filteredComments.length === 0 ? (
-            <div className="p-4 text-center text-gray-800 font-semibold">No comments found matching your filter.</div>
+            <div className="p-4 text-center text-muted font-semibold">No comments found matching your filter.</div>
           ) : (
             filteredComments.map((comment, index) => (
-              <div key={comment._id} className="p-4 sm:p-6 border-b-2 border-black last:border-b-0">
+              <div key={comment._id} className="p-4 sm:p-6 border-b border-border last:border-b-0">
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center">
-                    <span className="w-6 h-6 bg-black text-white rounded-full flex items-center justify-center text-xs font-bold mr-3">
+                    <span className="w-6 h-6 bg-accent text-white rounded-full flex items-center justify-center text-xs font-bold mr-3">
                       {index + 1}
                     </span>
                     <span className={`inline-flex px-2 py-1 text-xs font-bold rounded-full ${
@@ -199,14 +199,14 @@ const Comments = () => {
                       )}
                     </span>
                   </div>
-                  <div className="text-xs text-gray-800 font-semibold">
+                  <div className="text-xs text-muted font-semibold">
                     {formatDate(comment.createdAt)}
                   </div>
                 </div>
                 
                 <div className="mb-3">
-                  <p className="text-sm text-black mb-2 font-semibold">{comment.content}</p>
-                  <div className="flex items-center text-xs text-gray-800">
+                  <p className="text-sm text-heading mb-2 font-semibold">{comment.content}</p>
+                  <div className="flex items-center text-xs text-muted">
                     <span className="font-bold mr-2">By: {comment.name}</span>
                     <span>•</span>
                     <span className="ml-2 font-semibold">{comment.blog?.title || 'Unknown Blog'}</span>
@@ -245,40 +245,40 @@ const Comments = () => {
         {/* Desktop Table View */}
         <div className="hidden lg:block overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-amber-100">
+            <thead className="bg-slate-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">#</th>
-                <th className="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">Comment</th>
-                <th className="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">Blog</th>
-                <th className="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">Author</th>
-                <th className="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-bold text-heading uppercase tracking-wider">#</th>
+                <th className="px-6 py-3 text-left text-xs font-bold text-heading uppercase tracking-wider">Comment</th>
+                <th className="px-6 py-3 text-left text-xs font-bold text-heading uppercase tracking-wider">Blog</th>
+                <th className="px-6 py-3 text-left text-xs font-bold text-heading uppercase tracking-wider">Author</th>
+                <th className="px-6 py-3 text-left text-xs font-bold text-heading uppercase tracking-wider">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-bold text-heading uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-black">
+            <tbody className="bg-white divide-y divide-border">
               {loading ? (
                 <tr>
-                  <td colSpan="6" className="px-6 py-4 whitespace-nowrap text-center text-gray-800 font-semibold">
+                  <td colSpan="6" className="px-6 py-4 whitespace-nowrap text-center text-muted font-semibold">
                     <div className="flex items-center justify-center gap-2">
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-black"></div>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-accent"></div>
                       Loading comments...
                     </div>
                   </td>
                 </tr>
               ) : filteredComments.length === 0 ? (
                 <tr>
-                  <td colSpan="6" className="px-6 py-4 whitespace-nowrap text-center text-gray-800 font-semibold">
+                  <td colSpan="6" className="px-6 py-4 whitespace-nowrap text-center text-muted font-semibold">
                     No comments found matching your filter.
                   </td>
                 </tr>
               ) : (
                 filteredComments.map((comment, index) => (
-                  <tr key={comment._id} className="hover:bg-amber-100">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-black">{index + 1}</td>
+                  <tr key={comment._id} className="hover:bg-accent-soft">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-heading">{index + 1}</td>
                     <td className="px-6 py-4">
                       <div className="max-w-[300px]">
-                        <p className="text-sm text-black truncate font-semibold">{comment.content}</p>
-                        <p className="text-xs text-gray-800 mt-1 font-semibold">{formatDate(comment.createdAt)}</p>
+                        <p className="text-sm text-heading truncate font-semibold">{comment.content}</p>
+                        <p className="text-xs text-muted mt-1 font-semibold">{formatDate(comment.createdAt)}</p>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -286,16 +286,16 @@ const Comments = () => {
                         <img 
                           src={comment.blog?.image || assets.dummy} 
                           alt={comment.blog?.title || 'Unknown Blog'} 
-                          className="w-10 h-10 rounded-lg object-cover mr-3 border-2 border-black"
+                          className="w-10 h-10 rounded-lg object-cover mr-3 border border-border"
                         />
                         <div className="min-w-0 flex-1">
-                          <p className="text-sm font-bold text-black truncate">
+                          <p className="text-sm font-bold text-heading truncate">
                             {comment.blog?.title || 'Unknown Blog'}
                           </p>
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-black">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-heading">
                       {comment.name}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">

@@ -125,14 +125,14 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="flex-1 space-y-6 p-4 sm:p-6 overflow-x-hidden bg-gray-100">
+    <div className="flex-1 space-y-6 p-4 sm:p-6 overflow-x-hidden bg-page">
       {/* Header with Refresh Button */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-black text-black">Dashboard</h1>
+        <h1 className="text-2xl font-bold text-heading">Dashboard</h1>
         <button
           onClick={fetchDashboardData}
           disabled={loading}
-          className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 font-bold uppercase tracking-wide border-2 border-black"
+          className="bg-accent text-white px-4 py-2 rounded-lg hover:bg-accent-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 font-semibold"
         >
           {loading ? (
             <>
@@ -154,11 +154,11 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Total Blogs Card */}
         <div 
-          className="bg-white p-4 sm:p-6 rounded-lg shadow-lg border-2 border-black cursor-pointer hover:shadow-xl hover:border-black transition-all duration-200 group"
+          className="bg-white p-4 sm:p-6 rounded-lg shadow-lg border border-border cursor-pointer hover:shadow-xl hover:border-border transition-all duration-200 group"
           onClick={navigateToBlogs}
         >
           <div className="flex items-center">
-            <div className="p-2 sm:p-3 bg-black rounded-lg group-hover:bg-gray-800 transition-colors">
+            <div className="p-2 sm:p-3 bg-accent rounded-lg group-hover:bg-accent-hover transition-colors">
               <img src={assets.tick_icon} alt="blogs" className="w-5 h-5 sm:w-6 sm:h-6 filter invert" />
             </div>
             <div className="ml-3 sm:ml-4">
@@ -169,13 +169,13 @@ const Dashboard = () => {
                 </div>
               ) : (
                 <>
-                  <p className="text-xl sm:text-2xl font-black text-black group-hover:text-gray-800 transition-colors">{dashboardData.blogCount}</p>
-                  <p className="text-sm sm:text-base text-gray-800 group-hover:text-black transition-colors font-semibold">Blogs</p>
+                  <p className="text-xl sm:text-2xl font-bold text-heading group-hover:text-muted transition-colors">{dashboardData.blogCount}</p>
+                  <p className="text-sm sm:text-base text-muted group-hover:text-heading transition-colors font-semibold">Blogs</p>
                 </>
               )}
             </div>
             <div className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity">
-              <svg className="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-heading" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
               </svg>
             </div>
@@ -184,11 +184,11 @@ const Dashboard = () => {
 
         {/* Total Comments Card */}
         <div 
-          className="bg-white p-4 sm:p-6 rounded-lg shadow-lg border-2 border-black cursor-pointer hover:shadow-xl hover:border-black transition-all duration-200 group"
+          className="bg-white p-4 sm:p-6 rounded-lg shadow-lg border border-border cursor-pointer hover:shadow-xl hover:border-border transition-all duration-200 group"
           onClick={navigateToComments}
         >
           <div className="flex items-center">
-            <div className="p-2 sm:p-3 bg-black rounded-lg group-hover:bg-gray-800 transition-colors">
+            <div className="p-2 sm:p-3 bg-accent rounded-lg group-hover:bg-accent-hover transition-colors">
               <img src={assets.comment_icon} alt="comments" className="w-5 h-5 sm:w-6 sm:h-6 filter invert" />
             </div>
             <div className="ml-3 sm:ml-4">
@@ -199,13 +199,13 @@ const Dashboard = () => {
                 </div>
               ) : (
                 <>
-                  <p className="text-xl sm:text-2xl font-black text-black group-hover:text-gray-800 transition-colors">{dashboardData.commentCount}</p>
-                  <p className="text-sm sm:text-base text-gray-800 group-hover:text-black transition-colors font-semibold">Comments</p>
+                  <p className="text-xl sm:text-2xl font-bold text-heading group-hover:text-muted transition-colors">{dashboardData.commentCount}</p>
+                  <p className="text-sm sm:text-base text-muted group-hover:text-heading transition-colors font-semibold">Comments</p>
                 </>
               )}
             </div>
             <div className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity">
-              <svg className="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-heading" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
               </svg>
             </div>
@@ -214,11 +214,11 @@ const Dashboard = () => {
 
         {/* Total Drafts Card */}
         <div 
-          className="bg-white p-4 sm:p-6 rounded-lg shadow-lg border-2 border-black cursor-pointer hover:shadow-xl hover:border-black transition-all duration-200 group sm:col-span-2 lg:col-span-1"
+          className="bg-white p-4 sm:p-6 rounded-lg shadow-lg border border-border cursor-pointer hover:shadow-xl hover:border-border transition-all duration-200 group sm:col-span-2 lg:col-span-1"
           onClick={navigateToDrafts}
         >
           <div className="flex items-center">
-            <div className="p-2 sm:p-3 bg-black rounded-lg group-hover:bg-gray-800 transition-colors">
+            <div className="p-2 sm:p-3 bg-accent rounded-lg group-hover:bg-accent-hover transition-colors">
               <img src={assets.add_icon} alt="drafts" className="w-5 h-5 sm:w-6 sm:h-6 filter invert" />
             </div>
             <div className="ml-3 sm:ml-4">
@@ -229,13 +229,13 @@ const Dashboard = () => {
                 </div>
               ) : (
                 <>
-                  <p className="text-xl sm:text-2xl font-black text-black group-hover:text-gray-800 transition-colors">{dashboardData.draftBlogs}</p>
-                  <p className="text-sm sm:text-base text-gray-800 group-hover:text-black transition-colors font-semibold">Drafts</p>
+                  <p className="text-xl sm:text-2xl font-bold text-heading group-hover:text-muted transition-colors">{dashboardData.draftBlogs}</p>
+                  <p className="text-sm sm:text-base text-muted group-hover:text-heading transition-colors font-semibold">Drafts</p>
                 </>
               )}
             </div>
             <div className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity">
-              <svg className="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-heading" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
               </svg>
             </div>
@@ -245,16 +245,16 @@ const Dashboard = () => {
 
 
       {/* Latest Blogs Section */}
-      <div className="bg-white rounded-lg shadow-lg border-2 border-black">
-        <div className="p-4 sm:p-6 border-b-2 border-black">
+      <div className="bg-white rounded-lg shadow-lg border border-border">
+        <div className="p-4 sm:p-6 border-b border-border">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <div className="w-1 h-4 sm:h-6 bg-black rounded-full mr-2 sm:mr-3"></div>
-              <h2 className="text-lg sm:text-xl font-black text-black">Latest Blogs</h2>
+              <div className="w-1 h-4 sm:h-6 bg-accent rounded-full mr-2 sm:mr-3"></div>
+              <h2 className="text-lg sm:text-xl font-bold text-heading">Latest Blogs</h2>
             </div>
             {loading && (
-              <div className="flex items-center gap-2 text-sm text-gray-800 font-semibold">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-black"></div>
+              <div className="flex items-center gap-2 text-sm text-muted font-semibold">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-accent"></div>
                 Loading...
               </div>
             )}
@@ -264,15 +264,15 @@ const Dashboard = () => {
         {/* Mobile Card View */}
         <div className="block lg:hidden">
           {loading ? (
-            <div className="p-4 text-center text-gray-800 font-semibold">Loading blogs...</div>
+            <div className="p-4 text-center text-muted font-semibold">Loading blogs...</div>
           ) : dashboardData.recentBlogs.length === 0 ? (
-            <div className="p-4 text-center text-gray-800 font-semibold">No recent blogs found.</div>
+            <div className="p-4 text-center text-muted font-semibold">No recent blogs found.</div>
           ) : (
             dashboardData.recentBlogs.map((blog, index) => (
-              <div key={blog._id} className="p-3 sm:p-4 border-b-2 border-black last:border-b-0">
+              <div key={blog._id} className="p-3 sm:p-4 border-b border-border last:border-b-0">
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center">
-                    <span className="w-6 h-6 bg-black text-white rounded-full flex items-center justify-center text-xs font-bold mr-3">
+                    <span className="w-6 h-6 bg-accent text-white rounded-full flex items-center justify-center text-xs font-bold mr-3">
                       {index + 1}
                     </span>
                     <span className={`inline-flex px-2 py-1 text-xs font-bold rounded-full ${
@@ -283,19 +283,19 @@ const Dashboard = () => {
                       {blog.isPublished ? 'Published' : 'Draft'}
                     </span>
                   </div>
-                  <div className="text-xs text-gray-800 text-right font-semibold">
+                  <div className="text-xs text-muted text-right font-semibold">
                     {formatDate(blog.createdAt)}
                   </div>
                 </div>
                 
                 <div className="mb-3">
-                  <p className="text-sm font-bold text-black mb-2">{blog.title}</p>
+                  <p className="text-sm font-bold text-heading mb-2">{blog.title}</p>
                 </div>
                 
                 {canEditBlog(blog) && (
                 <div className="flex gap-2">
                   <button 
-                    className="flex-1 text-gray-800 hover:text-black bg-amber-100 hover:bg-amber-200 px-3 py-2 rounded-md text-xs font-bold transition-colors border border-black"
+                    className="flex-1 bg-accent-soft hover:bg-accent/10 text-accent px-3 py-2 rounded-md text-xs font-bold transition-colors border border-accent/20"
                     onClick={() => handleToggleStatus(blog._id)}
                   >
                     {blog.isPublished ? 'Unpublish' : 'Publish'}
@@ -316,34 +316,34 @@ const Dashboard = () => {
         {/* Desktop Table View */}
         <div className="hidden lg:block overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-amber-100">
+            <thead className="bg-slate-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">#</th>
-                <th className="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">Blog Title</th>
-                <th className="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">Date</th>
-                <th className="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-bold text-heading uppercase tracking-wider">#</th>
+                <th className="px-6 py-3 text-left text-xs font-bold text-heading uppercase tracking-wider">Blog Title</th>
+                <th className="px-6 py-3 text-left text-xs font-bold text-heading uppercase tracking-wider">Date</th>
+                <th className="px-6 py-3 text-left text-xs font-bold text-heading uppercase tracking-wider">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-bold text-heading uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-black">
+            <tbody className="bg-white divide-y divide-border">
               {loading ? (
                 <tr>
-                  <td colSpan="5" className="px-6 py-4 whitespace-nowrap text-center text-gray-800 font-semibold">Loading blogs...</td>
+                  <td colSpan="5" className="px-6 py-4 whitespace-nowrap text-center text-muted font-semibold">Loading blogs...</td>
                 </tr>
               ) : dashboardData.recentBlogs.length === 0 ? (
                 <tr>
-                  <td colSpan="5" className="px-6 py-4 whitespace-nowrap text-center text-gray-800 font-semibold">No recent blogs found.</td>
+                  <td colSpan="5" className="px-6 py-4 whitespace-nowrap text-center text-muted font-semibold">No recent blogs found.</td>
                 </tr>
               ) : (
                 dashboardData.recentBlogs.map((blog, index) => (
-                  <tr key={blog._id} className="hover:bg-amber-100">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-black">{index + 1}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-black">
+                  <tr key={blog._id} className="hover:bg-accent-soft">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-heading">{index + 1}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-heading">
                       <div className="max-w-[300px]">
                         <p className="truncate">{blog.title}</p>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 font-semibold">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-muted font-semibold">
                       {formatDate(blog.createdAt)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -359,7 +359,7 @@ const Dashboard = () => {
                       {canEditBlog(blog) ? (
                         <>
                           <button 
-                            className="text-gray-800 hover:text-black bg-amber-100 hover:bg-amber-200 px-3 py-1 rounded-md text-xs transition-colors font-bold border border-black cursor-pointer"
+                            className="bg-accent-soft hover:bg-accent/10 text-accent px-3 py-1 rounded-md text-xs transition-colors font-bold border border-accent/20 cursor-pointer"
                             onClick={() => handleToggleStatus(blog._id)}
                           >
                             {blog.isPublished ? 'Unpublish' : 'Publish'}
@@ -372,7 +372,7 @@ const Dashboard = () => {
                           </button>
                         </>
                       ) : (
-                        <span className="text-gray-500 text-xs">—</span>
+                        <span className="text-muted text-xs">—</span>
                       )}
                     </td>
                   </tr>

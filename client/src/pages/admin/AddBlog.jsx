@@ -212,8 +212,8 @@ const AddBlog = () => {
       onClick={onClick}
       className={`p-2 rounded-md transition-colors ${
         isActive 
-          ? 'bg-blue-100 text-blue-700' 
-                          : 'text-gray-600 hover:text-hover-primary hover:bg-hover-primary/20'
+          ? 'bg-accent-soft text-accent' 
+                          : 'text-gray-600 hover:text-accent hover:bg-accent-soft'
       } ${className}`}
       title={title}
     >
@@ -222,10 +222,10 @@ const AddBlog = () => {
   )
 
   return (
-    <div className="w-full space-y-6 p-4 sm:p-6 lg:p-8 min-h-full bg-gray-100">
+    <div className="w-full space-y-6 p-4 sm:p-6 lg:p-8 min-h-full bg-page">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-xl sm:text-2xl font-black text-black">Add New Blog</h1>
+        <h1 className="text-xl sm:text-2xl font-bold text-heading">Add New Blog</h1>
         <button
           type="button"
           onClick={async () => {
@@ -261,20 +261,20 @@ const AddBlog = () => {
               setLoading(false)
             }
           }}
-          className="mt-4 sm:mt-0 bg-black text-white px-3 sm:px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors text-sm sm:text-base cursor-pointer font-bold uppercase tracking-wide border-2 border-black"
+          className="mt-4 sm:mt-0 bg-accent text-white px-3 sm:px-4 py-2 rounded-lg hover:bg-accent-hover transition-colors text-sm sm:text-base cursor-pointer font-bold uppercase tracking-wide"
         >
           Save Draft
         </button>
       </div>
 
       {/* Form */}
-      <div className="bg-white rounded-lg shadow-lg border-2 border-black p-4 sm:p-6 lg:p-8">
+      <div className="bg-white rounded-lg shadow-lg border border-border p-4 sm:p-6 lg:p-8">
         <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6 lg:space-y-8">
           {/* Title and Subtitle Row */}
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
             {/* Title */}
             <div>
-              <label className="block text-sm font-bold text-black mb-1 sm:mb-2">
+              <label className="block text-sm font-bold text-heading mb-1 sm:mb-2">
                 Blog Title *
               </label>
               <input
@@ -282,7 +282,7 @@ const AddBlog = () => {
                 name="title"
                 value={formData.title}
                 onChange={handleInputChange}
-                className="w-full px-3 sm:px-4 py-3 border-2 border-black rounded-md focus:outline-none focus:ring-2 focus:ring-black text-sm sm:text-base font-semibold"
+                className="w-full px-3 sm:px-4 py-3 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-accent text-sm sm:text-base font-semibold"
                 placeholder="Enter blog title"
                 required
               />
@@ -290,7 +290,7 @@ const AddBlog = () => {
 
             {/* Subtitle */}
             <div>
-              <label className="block text-sm font-bold text-black mb-1 sm:mb-2">
+              <label className="block text-sm font-bold text-heading mb-1 sm:mb-2">
                 Subtitle
               </label>
               <input
@@ -298,7 +298,7 @@ const AddBlog = () => {
                 name="subTitle"
                 value={formData.subTitle}
                 onChange={handleInputChange}
-                className="w-full px-3 sm:px-4 py-3 border-2 border-black rounded-md focus:outline-none focus:ring-2 focus:ring-black text-sm sm:text-base font-semibold"
+                className="w-full px-3 sm:px-4 py-3 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-accent text-sm sm:text-base font-semibold"
                 placeholder="Enter subtitle"
               />
             </div>
@@ -308,14 +308,14 @@ const AddBlog = () => {
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
             {/* Category */}
             <div>
-              <label className="block text-sm font-bold text-black mb-1 sm:mb-2">
+              <label className="block text-sm font-bold text-heading mb-1 sm:mb-2">
                 Category *
               </label>
               <select
                 name="category"
                 value={formData.category}
                 onChange={handleInputChange}
-                className="w-full px-3 sm:px-4 py-3 border-2 border-black rounded-md focus:outline-none focus:ring-2 focus:ring-black text-sm sm:text-base font-semibold"
+                className="w-full px-3 sm:px-4 py-3 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-accent text-sm sm:text-base font-semibold"
                 required
               >
                 <option value="">Select category</option>
@@ -331,10 +331,10 @@ const AddBlog = () => {
 
             {/* Image Upload */}
             <div>
-              <label className="block text-sm font-bold text-black mb-1 sm:mb-2">
+              <label className="block text-sm font-bold text-heading mb-1 sm:mb-2">
                 Blog Image *
               </label>
-              <div className="border-2 border-dashed border-black rounded-lg p-3 sm:p-4 text-center">
+              <div className="border-2 border-dashed border-border rounded-lg p-3 sm:p-4 text-center">
                 {formData.image ? (
                   <div className="space-y-3">
                     <img 
@@ -343,7 +343,7 @@ const AddBlog = () => {
                       className="mx-auto h-32 w-auto rounded-lg object-cover"
                     />
                     <div className="flex items-center justify-center gap-2">
-                      <span className="text-sm text-gray-800 font-semibold">{formData.image.name}</span>
+                      <span className="text-sm text-muted font-semibold">{formData.image.name}</span>
                       <button
                         type="button"
                         onClick={() => setFormData({...formData, image: null})}
@@ -356,8 +356,8 @@ const AddBlog = () => {
                 ) : (
                   <>
                     <img src={assets.upload_area} alt="upload" className="mx-auto h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12 text-gray-400 mb-2 sm:mb-3" />
-                    <div className="text-xs sm:text-sm text-gray-800">
-                      <label htmlFor="image-upload" className="relative cursor-pointer bg-white rounded-md font-bold text-black hover:text-gray-800 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-black border-2 border-black px-3 py-1">
+                    <div className="text-xs sm:text-sm text-muted">
+                      <label htmlFor="image-upload" className="relative cursor-pointer bg-white rounded-md font-bold text-heading hover:text-muted focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-accent border border-border px-3 py-1">
                         <span>Upload a file</span>
                         <input
                           id="image-upload"
@@ -371,7 +371,7 @@ const AddBlog = () => {
                       </label>
                       <p className="pl-1 font-semibold">or drag and drop</p>
                     </div>
-                    <p className="text-xs text-gray-800 font-semibold">PNG, JPG, GIF up to 10MB</p>
+                    <p className="text-xs text-muted font-semibold">PNG, JPG, GIF up to 10MB</p>
                   </>
                 )}
               </div>
@@ -381,25 +381,25 @@ const AddBlog = () => {
           {/* AI Content Generation Button - Moved to content box */}
           {/* Rich Text Editor */}
     <div>
-            <label className="block text-sm font-bold text-black mb-1 sm:mb-2">
+            <label className="block text-sm font-bold text-heading mb-1 sm:mb-2">
               Blog Content *
             </label>
             
             {/* AI Generation Status */}
             {aiGenerating && (
-              <div className="mb-3 p-3 bg-amber-100 border-2 border-black rounded-lg">
-                <div className="flex items-center gap-2 text-black">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-black"></div>
+              <div className="mb-3 p-3 bg-accent-soft border border-accent/20 rounded-lg">
+                <div className="flex items-center gap-2 text-heading">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-accent"></div>
                   <span className="text-sm font-bold">AI is generating your blog content...</span>
                 </div>
-                <p className="text-xs text-gray-800 mt-1 font-semibold">This may take a few moments. Please wait.</p>
+                <p className="text-xs text-muted mt-1 font-semibold">This may take a few moments. Please wait.</p>
               </div>
             )}
             
             {/* Toolbar */}
-            <div className="border-2 border-black rounded-t-md bg-amber-100 p-3 flex flex-wrap items-center gap-2">
+            <div className="border border-border rounded-t-md bg-slate-50 p-3 flex flex-wrap items-center gap-2">
               {/* Undo/Redo */}
-              <div className="flex items-center gap-1 border-r-2 border-black pr-2">
+              <div className="flex items-center gap-1 border-r border-border pr-2">
                 <ToolbarButton
                   onClick={() => editor?.chain().focus().undo().run()}
                   title="Undo"
@@ -419,10 +419,10 @@ const AddBlog = () => {
               </div>
 
               {/* Font Family */}
-              <div className="border-r-2 border-black pr-2">
+              <div className="border-r border-border pr-2">
                 <select 
                   onChange={(e) => editor?.chain().focus().setFontFamily(e.target.value).run()}
-                  className="px-2 py-1 text-xs border-2 border-black rounded bg-white focus:outline-none focus:ring-1 focus:ring-black font-semibold"
+                  className="px-2 py-1 text-xs border border-border rounded bg-white focus:outline-none focus:ring-1 focus:ring-accent font-semibold"
                   title="Font Family"
                 >
                   <option value="Lora">Lora</option>
@@ -640,7 +640,7 @@ const AddBlog = () => {
             </div>
             
             {/* Editor Content */}
-            <div className="border-2 border-t-0 border-black rounded-b-md relative">
+            <div className="border border-t-0 border-border rounded-b-md relative">
               <EditorContent 
                 editor={editor} 
                 className="prose max-w-none p-4 min-h-[300px]"
@@ -652,8 +652,8 @@ const AddBlog = () => {
                   type="button"
                   onClick={handleAIGenerate}
                   disabled={aiGenerating}
-                  className="inline-flex items-center gap-2 bg-black text-white px-3 py-2 rounded-lg hover:bg-gray-800 transition-all duration-200 text-sm font-bold uppercase tracking-wide disabled:opacity-50 disabled:cursor-not-allowed shadow-lg border-2 border-black"
-                  title="Generate AI-powered blog content"
+                  className="inline-flex items-center gap-2 bg-accent text-white px-3 py-2 rounded-lg hover:bg-accent-hover transition-all duration-200 text-sm font-bold uppercase tracking-wide disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+                  title="Generate blog content with AI"
                 >
                   {aiGenerating ? (
                     <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white"></div>
@@ -673,7 +673,7 @@ const AddBlog = () => {
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 bg-black text-white py-3 px-4 sm:px-6 rounded-md hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 transition-colors text-sm sm:text-base font-bold uppercase tracking-wide disabled:opacity-50 disabled:cursor-not-allowed border-2 border-black"
+              className="flex-1 bg-accent text-white py-3 px-4 sm:px-6 rounded-md hover:bg-accent-hover focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 transition-colors text-sm sm:text-base font-bold uppercase tracking-wide disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <div className="flex items-center justify-center gap-2">
@@ -688,7 +688,7 @@ const AddBlog = () => {
               type="button"
               onClick={() => navigate('/admin/blog-list')}
               disabled={loading}
-              className="flex-1 sm:flex-none bg-white text-black py-3 px-4 sm:px-6 rounded-md hover:bg-amber-100 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 transition-colors text-sm sm:text-base font-bold uppercase tracking-wide disabled:opacity-50 disabled:cursor-not-allowed border-2 border-black"
+              className="flex-1 sm:flex-none bg-white text-heading py-3 px-4 sm:px-6 rounded-md hover:bg-accent-soft focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 transition-colors text-sm sm:text-base font-bold uppercase tracking-wide disabled:opacity-50 disabled:cursor-not-allowed border border-border"
             >
               Cancel
             </button>
