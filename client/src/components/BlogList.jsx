@@ -32,6 +32,7 @@ function BlogList() {
   const displayBlogs = sortedBlogs.filter((blog) => {
     if (menu === "All") return true;
     if (menu === "Tech/Startup") return blog.category === "Technology" || blog.category === "Startup";
+    if (menu === "Sports") return blog.category === "Cricket" || blog.category === "Sports";
     return blog.category === menu;
   });
 
