@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import Home from './pages/Home'
 import Blog from './pages/Blog'
 import { Routes, Route, Navigate } from 'react-router-dom'
-import { AppProvider, useAppContext } from './contexts/AppContext'
+import { useAppContext } from './contexts/AppContext'
 
 import Layout from './pages/admin/Layout'
 import Dashboard from './pages/admin/Dashboard'
@@ -18,7 +18,7 @@ import WriterDashboard from './pages/writer/WriterDashboard'
 import {Toaster} from 'react-hot-toast'
 
 const AppRoutes = () => {
-  const { token, user } = useAppContext();
+  const { token, user, authLoading } = useAppContext();
 
   // Only admins can access admin routes; writers get redirected
   const isAdmin = user?.role === 'admin';
@@ -31,6 +31,14 @@ const AppRoutes = () => {
     return children;
   };
   
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-page">
+        <div className="w-8 h-8 border-3 border-accent border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
   return (
     <div>
       <Toaster />
@@ -68,20 +76,14 @@ const AppRoutes = () => {
 }
 
 const App = () => {
-  // Add smooth scroll behavior globally
   useEffect(() => {
     document.documentElement.style.scrollBehavior = 'smooth';
-    
     return () => {
       document.documentElement.style.scrollBehavior = 'auto';
     };
   }, []);
 
-  return (
-    <AppProvider>
-      <AppRoutes />
-    </AppProvider>
-  )
+  return <AppRoutes />;
 }
 
 export default App

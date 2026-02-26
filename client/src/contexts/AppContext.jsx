@@ -29,6 +29,7 @@ export const AppProvider = ({children}) => {
     const [user, setUser] = useState(null);
     const [blogs, setBlogs] = useState([]);
     const [input, setInput] = useState("");
+    const [authLoading, setAuthLoading] = useState(true);
 
     const fetchBlogs = async () => {
         try {
@@ -108,9 +109,13 @@ export const AppProvider = ({children}) => {
                     localStorage.removeItem("userToken");
                     validateAndSetToken(null);
                     toast.error("Session expired. Please login again.");
+                })
+                .finally(() => {
+                    setAuthLoading(false);
                 });
         } else {
             validateAndSetToken(null);
+            setAuthLoading(false);
         }
     }, []);
 
@@ -119,13 +124,14 @@ export const AppProvider = ({children}) => {
         navigate,
         token,
         user,
-        setToken: validateAndSetToken, // Use the wrapper function
+        setToken: validateAndSetToken,
         blogs,
         setBlogs,
         input,
         setInput,
         fetchBlogs,
         fetchAllBlogs,
+        authLoading,
     };
 
     return(

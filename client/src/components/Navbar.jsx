@@ -16,12 +16,12 @@ useEffect(() => {
   return (
     <div className={`sticky top-0 z-40 transition-shadow duration-300 ${scrolled ? 'shadow-md' : 'shadow-none'}`}>
       <div className={`backdrop-blur-md border-b border-transparent ${scrolled ? 'bg-navy/95' : 'bg-navy/90'}`}>
-        <div className='flex justify-between items-center py-3 md:py-4 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8'>
+        <div className='flex justify-between items-center py-1.5 md:py-2 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8'>
           <img
             onClick={() => navigate('/')}
             src={assets.logo}
             alt='logo'
-            className='w-14 sm:w-16 lg:w-20 cursor-pointer hover:scale-[1.03] transition-transform brightness-0 invert'
+            className='w-12 sm:w-14 lg:w-16 cursor-pointer hover:scale-[1.03] transition-transform brightness-0 invert'
           />
 
           {token ? (

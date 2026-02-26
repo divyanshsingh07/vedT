@@ -71,18 +71,18 @@ const Layout = () => {
   return (
     <>
       {/* Navbar - Same as regular Navbar but with Logout */}
-      <div className='flex justify-between items-center py-2 sm:py-3 px-4 sm:px-8 lg:px-20 xl:px-32 bg-navy border-b border-navy-light'>
+      <div className='flex justify-between items-center py-1.5 sm:py-2 px-4 sm:px-8 lg:px-20 xl:px-32 bg-navy border-b border-navy-light'>
         <div className='flex items-center gap-3'>
           <img 
             onClick={handleLogoClick} 
             src={assets.logo} 
             alt='logo' 
-            className='w-20 sm:w-24 lg:w-32 cursor-pointer hover:opacity-80 transition-opacity brightness-0 invert' 
+            className='w-14 sm:w-16 lg:w-20 cursor-pointer hover:opacity-80 transition-opacity brightness-0 invert' 
           />
           {adminInfo && (
             <div className='hidden sm:block'>
-              <p className='text-xs text-slate-400 font-medium'>Welcome back,</p>
-              <p className='text-base font-bold text-white'>{adminInfo.name}</p>
+              <p className='text-[10px] text-slate-400 font-medium leading-tight'>Welcome back,</p>
+              <p className='text-sm font-bold text-white leading-tight'>{adminInfo.name}</p>
             </div>
           )}
         </div>
@@ -96,7 +96,7 @@ const Layout = () => {
       </div>
 
       {/* Content from child routes */}
-      <div className='flex h-[calc(100vh-60px)] sm:h-[calc(100vh-70px)]'>
+      <div className='flex h-[calc(100vh-48px)] sm:h-[calc(100vh-52px)]'>
         <Sidebar />
         <div className='flex-1 overflow-y-auto bg-page'>
           <Outlet />
