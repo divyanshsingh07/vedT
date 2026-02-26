@@ -91,27 +91,23 @@ export const AppProvider = ({children}) => {
     useEffect(() => {
         fetchBlogs();
         
-        // Check for tokens in localStorage (admin or user)
         const adminToken = localStorage.getItem("adminToken");
         const userToken = localStorage.getItem("userToken");
         const activeToken = adminToken || userToken;
         
         if (activeToken) {
+            // Trust the token from localStorage immediately so routes render correctly.
+            // The validation call only checks if the server still accepts it.
             validateAndSetToken(activeToken);
+            setAuthLoading(false);
             
             const testEndpoint = adminToken ? "/api/admin/dashboard" : "/api/user/dashboard";
-            axios.get(testEndpoint)
-                .then(() => {
-                    validateAndSetToken(activeToken);
-                })
+            axios.get(testEndpoint, { timeout: 10000 })
                 .catch(() => {
                     localStorage.removeItem("adminToken");
                     localStorage.removeItem("userToken");
                     validateAndSetToken(null);
                     toast.error("Session expired. Please login again.");
-                })
-                .finally(() => {
-                    setAuthLoading(false);
                 });
         } else {
             validateAndSetToken(null);

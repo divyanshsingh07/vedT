@@ -33,8 +33,9 @@ const AppRoutes = () => {
   
   if (authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-page">
-        <div className="w-8 h-8 border-3 border-accent border-t-transparent rounded-full animate-spin" />
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#F8FAFC' }}>
+        <div style={{ width: 32, height: 32, border: '3px solid #6366F1', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+        <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
       </div>
     );
   }
