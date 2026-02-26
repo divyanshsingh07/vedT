@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import { assets } from '../../assets/assets'
 
 const Sidebar = () => {
+  const navigate = useNavigate()
   const [isPinned, setIsPinned] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
@@ -44,10 +45,18 @@ const Sidebar = () => {
     ${isMobile ? 'opacity-100' : (isSmallScreen ? (isPinned ? 'opacity-100' : 'opacity-0 group-hover:opacity-100') : 'opacity-100')}
   `
 
+  const handleLogoClick = () => {
+    if (isMobile) setIsMobileMenuOpen(false)
+    navigate('/')
+  }
+
   const NavigationContent = () => (
     <>
       <div className="mb-5 lg:mb-7">
-        <div className="flex items-center justify-center md:justify-start">
+        <div
+          className="flex items-center justify-center md:justify-start cursor-pointer"
+          onClick={handleLogoClick}
+        >
           <img
             src={assets.logo}
             alt="Logo"

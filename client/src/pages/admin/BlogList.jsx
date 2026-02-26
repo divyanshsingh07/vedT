@@ -1,7 +1,12 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAppContext } from '../../contexts/AppContext'
 import toast from 'react-hot-toast'
+import { useEditor, EditorContent } from '@tiptap/react'
+import StarterKit from '@tiptap/starter-kit'
+import Underline from '@tiptap/extension-underline'
+import TextAlign from '@tiptap/extension-text-align'
+import Link from '@tiptap/extension-link'
 
 const BlogList = () => {
   const { axios, fetchAllBlogs, user } = useAppContext()
@@ -124,19 +129,11 @@ const BlogList = () => {
 
   const handleEdit = (blog) => {
     setEditingBlog(blog)
-    
-    // Strip HTML tags from description for clean editing
-    const stripHtml = (html) => {
-      const tmp = document.createElement('div')
-      tmp.innerHTML = html
-      return tmp.textContent || tmp.innerText || ''
-    }
-    
     setEditForm({
       title: blog.title,
       subtitle: blog.subtitle || '',
       category: blog.category,
-      description: stripHtml(blog.description),
+      description: blog.description || '',
       image: null
     })
   }
@@ -227,7 +224,42 @@ const BlogList = () => {
       description: '',
       image: null
     })
+    if (editEditor) editEditor.commands.clearContent()
   }
+
+  // Rich text editor for edit modal
+  const editEditor = useEditor({
+    extensions: [
+      StarterKit,
+      Underline,
+      TextAlign.configure({ types: ['heading', 'paragraph'] }),
+      Link.configure({ openOnClick: false }),
+    ],
+    content: '',
+    onUpdate: ({ editor }) => {
+      setEditForm(prev => ({ ...prev, description: editor.getHTML() }))
+    },
+  })
+
+  // Sync editor content when editForm.description is loaded
+  useEffect(() => {
+    if (editEditor && editingBlog) {
+      editEditor.commands.setContent(editForm.description || '')
+    }
+  }, [editingBlog])
+
+  const EditToolbarButton = ({ onClick, isActive, children, title }) => (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`p-1.5 rounded transition-colors ${
+        isActive ? 'bg-accent-soft text-accent' : 'text-muted hover:bg-slate-100 hover:text-heading'
+      }`}
+      title={title}
+    >
+      {children}
+    </button>
+  )
 
   const handleAddNewBlog = () => {
     navigate('/admin/add-blog')
@@ -334,8 +366,8 @@ const BlogList = () => {
 
           {/* Blogs Table */}
           <div className="bg-white rounded-lg shadow-sm border border-border overflow-hidden">
-            {/* Mobile Card View */}
-            <div className="block lg:hidden">
+            {/* Card View (mobile + medium screens) */}
+            <div className="block xl:hidden">
               {filteredBlogs.map((blog, index) => (
                 <div key={blog._id} className="p-3 sm:p-4 border-b border-border last:border-b-0">
                   <div className="flex items-start justify-between mb-3">
@@ -437,8 +469,8 @@ const BlogList = () => {
               ))}
             </div>
 
-            {/* Desktop Table View */}
-            <div className="hidden lg:block overflow-x-auto">
+            {/* Desktop Table View (xl and above) */}
+            <div className="hidden xl:block overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-slate-50">
                   <tr>
@@ -454,14 +486,14 @@ const BlogList = () => {
                   {filteredBlogs.map((blog, index) => (
                     <tr key={blog._id} className="hover:bg-accent-soft">
                       <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-muted">{index + 1}</td>
-                      <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
+                      <td className="px-3 sm:px-6 py-4 max-w-[280px]">
                         <div className="flex items-center">
                           <img 
                             src={blog.image} 
                             alt={blog.title} 
-                            className="w-10 h-10 rounded-lg object-cover mr-3"
+                            className="w-10 h-10 rounded-lg object-cover mr-3 flex-shrink-0"
                           />
-                          <div className="min-w-0 flex-1">
+                          <div className="min-w-0">
                             <p className="text-sm font-medium text-heading truncate">{blog.title}</p>
                             <p className="text-xs text-muted truncate">{blog.subTitle}</p>
                           </div>
@@ -500,44 +532,39 @@ const BlogList = () => {
                       </td>
                       <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm font-medium">
                         {canEditBlog(blog) ? (
-                          <div className="flex gap-2">
+                          <div className="flex items-center gap-1">
                             <button 
                               onClick={() => handleToggleStatus(blog._id)}
-                              className="text-muted hover:text-accent bg-page hover:bg-accent-soft px-3 py-1 rounded-md text-xs transition-colors flex items-center justify-center gap-1"
+                              className="text-muted hover:text-accent bg-page hover:bg-accent-soft p-1.5 rounded-md text-xs transition-colors cursor-pointer"
+                              title={blog.isPublished ? 'Make Draft' : 'Publish'}
                             >
                               {blog.isPublished ? (
-                                <>
-                                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm0 2h12v8H4V6z" clipRule="evenodd" />
-                                  </svg>
-                                  Make Draft
-                                </>
+                                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm0 2h12v8H4V6z" clipRule="evenodd" />
+                                </svg>
                               ) : (
-                                <>
-                                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                  </svg>
-                                  Publish
-                                </>
+                                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                </svg>
                               )}
                             </button>
                             <button 
                               onClick={() => handleEdit(blog)}
-                              className="text-accent hover:text-accent bg-accent-soft hover:bg-accent-soft px-3 py-1 rounded-md text-xs transition-colors flex items-center justify-center gap-1"
+                              className="text-accent hover:text-white hover:bg-accent p-1.5 rounded-md text-xs transition-colors cursor-pointer"
+                              title="Edit"
                             >
-                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                               </svg>
-                              Edit
                             </button>
                             <button 
                               onClick={() => handleDelete(blog._id)}
-                              className="text-red-600 hover:text-accent bg-red-100 hover:bg-accent-soft px-3 py-1 rounded-md text-xs transition-colors flex items-center justify-center gap-1"
+                              className="text-red-500 hover:text-white hover:bg-red-500 p-1.5 rounded-md text-xs transition-colors cursor-pointer"
+                              title="Delete"
                             >
-                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                               </svg>
-                              Delete
                             </button>
                           </div>
                         ) : (
@@ -620,14 +647,13 @@ const BlogList = () => {
                     required
                   >
                     <option value="">Select Category</option>
-                    <option value="Technology">Technology</option>
+                    <option value="Technology">Tech/Startup</option>
                     <option value="Lifestyle">Lifestyle</option>
-                    <option value="Travel">Travel</option>
-                    <option value="Food">Food</option>
-                    <option value="Health">Health</option>
-                    <option value="Business">Business</option>
+                    <option value="Finance">Finance</option>
+                    <option value="Politics">Politics</option>
+                    <option value="Cricket">Sports</option>
+                    <option value="Geography">Geography</option>
                     <option value="Education">Education</option>
-                    <option value="Entertainment">Entertainment</option>
                   </select>
                 </div>
 
@@ -636,17 +662,69 @@ const BlogList = () => {
                   <label className="block text-sm font-medium text-muted mb-1">
                     Description *
                   </label>
-                  <textarea
-                    name="description"
-                    value={editForm.description}
-                    onChange={handleEditInputChange}
-                    rows="6"
-                    className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-accent"
-                    required
-                  />
-                  <p className="text-xs text-muted mt-1">
-                    You can use HTML tags for formatting (e.g., &lt;p&gt;, &lt;strong&gt;, &lt;em&gt;)
-                  </p>
+                  {/* Toolbar */}
+                  <div className="border border-border rounded-t-md bg-slate-50 p-2 flex flex-wrap items-center gap-1">
+                    <div className="flex items-center gap-0.5 border-r border-border pr-1.5">
+                      <EditToolbarButton onClick={() => editEditor?.chain().focus().toggleBold().run()} isActive={editEditor?.isActive('bold')} title="Bold">
+                        <span className="text-xs font-bold">B</span>
+                      </EditToolbarButton>
+                      <EditToolbarButton onClick={() => editEditor?.chain().focus().toggleItalic().run()} isActive={editEditor?.isActive('italic')} title="Italic">
+                        <span className="text-xs italic font-semibold">I</span>
+                      </EditToolbarButton>
+                      <EditToolbarButton onClick={() => editEditor?.chain().focus().toggleUnderline().run()} isActive={editEditor?.isActive('underline')} title="Underline">
+                        <span className="text-xs underline font-semibold">U</span>
+                      </EditToolbarButton>
+                    </div>
+                    <div className="flex items-center gap-0.5 border-r border-border pr-1.5">
+                      <EditToolbarButton onClick={() => editEditor?.chain().focus().toggleHeading({ level: 1 }).run()} isActive={editEditor?.isActive('heading', { level: 1 })} title="Heading 1">
+                        <span className="text-[10px] font-bold">H1</span>
+                      </EditToolbarButton>
+                      <EditToolbarButton onClick={() => editEditor?.chain().focus().toggleHeading({ level: 2 }).run()} isActive={editEditor?.isActive('heading', { level: 2 })} title="Heading 2">
+                        <span className="text-[10px] font-bold">H2</span>
+                      </EditToolbarButton>
+                      <EditToolbarButton onClick={() => editEditor?.chain().focus().toggleHeading({ level: 3 }).run()} isActive={editEditor?.isActive('heading', { level: 3 })} title="Heading 3">
+                        <span className="text-[10px] font-bold">H3</span>
+                      </EditToolbarButton>
+                    </div>
+                    <div className="flex items-center gap-0.5 border-r border-border pr-1.5">
+                      <EditToolbarButton onClick={() => editEditor?.chain().focus().toggleBulletList().run()} isActive={editEditor?.isActive('bulletList')} title="Bullet List">
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" /></svg>
+                      </EditToolbarButton>
+                      <EditToolbarButton onClick={() => editEditor?.chain().focus().toggleOrderedList().run()} isActive={editEditor?.isActive('orderedList')} title="Numbered List">
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" /></svg>
+                      </EditToolbarButton>
+                    </div>
+                    <div className="flex items-center gap-0.5 border-r border-border pr-1.5">
+                      <EditToolbarButton onClick={() => editEditor?.chain().focus().toggleBlockquote().run()} isActive={editEditor?.isActive('blockquote')} title="Quote">
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
+                      </EditToolbarButton>
+                      <EditToolbarButton
+                        onClick={() => {
+                          const url = prompt('Enter URL:')
+                          if (url) editEditor?.chain().focus().setLink({ href: url }).run()
+                        }}
+                        isActive={editEditor?.isActive('link')}
+                        title="Insert Link"
+                      >
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
+                      </EditToolbarButton>
+                    </div>
+                    <div className="flex items-center gap-0.5">
+                      <EditToolbarButton onClick={() => editEditor?.chain().focus().setTextAlign('left').run()} isActive={editEditor?.isActive({ textAlign: 'left' })} title="Align Left">
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h10M4 18h16" /></svg>
+                      </EditToolbarButton>
+                      <EditToolbarButton onClick={() => editEditor?.chain().focus().setTextAlign('center').run()} isActive={editEditor?.isActive({ textAlign: 'center' })} title="Align Center">
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M7 12h10M4 18h16" /></svg>
+                      </EditToolbarButton>
+                    </div>
+                  </div>
+                  {/* Editor */}
+                  <div className="border border-t-0 border-border rounded-b-md bg-white">
+                    <EditorContent
+                      editor={editEditor}
+                      className="prose max-w-none min-h-[200px]"
+                    />
+                  </div>
                 </div>
 
                 {/* Image */}

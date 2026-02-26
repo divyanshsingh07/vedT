@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800" height="800" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="SD logo mark in teal">
+  <title>SD Logo Mark</title>
+  <desc>Stylized S and D monogram logo in #14B8A6</desc>
+  <g fill="none" stroke="#14B8A6" stroke-width="44" stroke-linecap="round" stroke-linejoin="round">
+    <!-- D outline -->
+    <path d="M112 96 H304 Q400 96 400 192 V320 Q400 416 304 416 H112 Z"/>
+    <!-- S curve -->
+    <path d="M328 160 C264 112 168 120 168 168 C168 208 256 208 256 256 C256 304 168 304 168 344 C168 392 264 400 328 352"/>
+  </g>
+</svg>
