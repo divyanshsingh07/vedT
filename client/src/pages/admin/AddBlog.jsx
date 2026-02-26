@@ -319,13 +319,13 @@ const AddBlog = () => {
                 required
               >
                 <option value="">Select category</option>
-                <option value="Technology">Technology</option>
-                <option value="Startup">Startup</option>
+                <option value="Technology">Tech/Startup</option>
                 <option value="Lifestyle">Lifestyle</option>
                 <option value="Finance">Finance</option>
                 <option value="Politics">Politics</option>
-                <option value="Cricket">Cricket</option>
+                <option value="Cricket">Sports</option>
                 <option value="Geography">Geography</option>
+                <option value="Education">Education</option>
               </select>
             </div>
 

@@ -29,7 +29,11 @@ function BlogList() {
     return list.sort((a, b) => (b?.description?.length || 0) - (a?.description?.length || 0));
   }, [filteredBlogs, sortBy]);
 
-  const displayBlogs = sortedBlogs.filter((blog) => menu === "All" ? true : blog.category === menu);
+  const displayBlogs = sortedBlogs.filter((blog) => {
+    if (menu === "All") return true;
+    if (menu === "Tech/Startup") return blog.category === "Technology" || blog.category === "Startup";
+    return blog.category === menu;
+  });
 
   return (
     <div

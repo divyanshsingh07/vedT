@@ -17,6 +17,10 @@ const Blog = () => {
   const [commentSubmitted, setCommentSubmitted] = useState(false);
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [id]);
+
+  useEffect(() => {
     if (id) {
       fetchBlog();
       fetchComments();

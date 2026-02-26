@@ -27,7 +27,7 @@ function Header() {
   };
 
   return (
-    <section className="relative overflow-hidden py-10 sm:py-12 lg:py-16">
+    <section className="relative overflow-x-hidden py-10 sm:py-12 lg:py-16">
       <div className="pointer-events-none absolute -left-32 top-10 h-64 w-64 rounded-full bg-accent/10 blur-3xl" />
       <div className="pointer-events-none absolute -right-32 bottom-0 h-64 w-64 rounded-full bg-slate-300/20 blur-3xl" />
 
@@ -39,13 +39,13 @@ function Header() {
             transition={{ duration: 0.6, ease: 'easeOut' }}
             className="space-y-6"
           >
-            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-accent-soft px-4 py-1.5 text-[11px] sm:text-xs font-semibold uppercase tracking-[0.16em] text-accent">
-              <img src={assets.star_icon} alt="spark" className="h-3.5 w-3.5" />
-              <span className="whitespace-nowrap">Write your next blog with AI assistance</span>
+            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-accent-soft px-3 sm:px-4 py-1.5 text-[10px] sm:text-xs font-semibold uppercase tracking-[0.12em] sm:tracking-[0.16em] text-accent max-w-full">
+              <img src={assets.star_icon} alt="spark" className="h-3.5 w-3.5 flex-shrink-0" />
+              <span className="truncate sm:whitespace-nowrap">Write your next blog with AI assistance</span>
             </div>
 
             <div className="space-y-3 sm:space-y-4">
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black tracking-tight leading-tight text-heading font-serif">
+              <h1 className="text-[1.65rem] sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black tracking-tight leading-tight text-heading font-serif">
                 Your space for
                 <span className="block bg-gradient-to-r from-accent to-accent-hover bg-clip-text text-transparent">
                   thoughtful blogging
@@ -57,10 +57,10 @@ function Header() {
               </p>
             </div>
 
-            <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+            <div className="flex flex-wrap items-center gap-2.5 sm:gap-4">
               <button
                 onClick={() => navigate(token ? '/admin' : '/admin')}
-                className="inline-flex items-center gap-2 rounded-full bg-accent px-5 sm:px-6 py-2.5 text-xs sm:text-sm font-semibold uppercase tracking-[0.12em] text-white shadow-lg shadow-accent/25 hover:bg-accent-hover hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.02] active:translate-y-0 active:scale-100 transition-all"
+                className="inline-flex items-center gap-2 rounded-full bg-accent px-4 sm:px-6 py-2 sm:py-2.5 text-[11px] sm:text-sm font-semibold uppercase tracking-[0.1em] sm:tracking-[0.12em] text-white shadow-lg shadow-accent/25 hover:bg-accent-hover hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.02] active:translate-y-0 active:scale-100 transition-all"
               >
                 Start writing
                 <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-white text-[10px] text-accent font-bold">
@@ -69,24 +69,24 @@ function Header() {
               </button>
               <button
                 onClick={scrollToBlogs}
-                className="inline-flex items-center gap-2 rounded-full border border-border bg-white px-5 sm:px-6 py-2.5 text-xs sm:text-sm font-semibold uppercase tracking-[0.12em] text-heading shadow-sm hover:bg-accent-soft hover:border-accent/30 hover:shadow-md hover:-translate-y-0.5 hover:scale-[1.02] active:translate-y-0 active:scale-100 transition-all"
+                className="inline-flex items-center gap-2 rounded-full border border-border bg-white px-4 sm:px-6 py-2 sm:py-2.5 text-[11px] sm:text-sm font-semibold uppercase tracking-[0.1em] sm:tracking-[0.12em] text-heading shadow-sm hover:bg-accent-soft hover:border-accent/30 hover:shadow-md hover:-translate-y-0.5 hover:scale-[1.02] active:translate-y-0 active:scale-100 transition-all"
               >
                 Explore blogs
               </button>
             </div>
 
-            <div className="flex flex-wrap gap-4 text-xs sm:text-sm font-medium text-muted">
+            <div className="flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-4 text-[11px] sm:text-sm font-medium text-muted">
               <div className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 border border-border">
-                <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500 text-[10px] font-bold text-white">
+                <span className="inline-flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-emerald-500 text-[10px] font-bold text-white">
                   ✓
                 </span>
-                No noise, just words that matter
+                <span className="truncate">No noise, just words that matter</span>
               </div>
               <div className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 border border-border">
-                <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-white">
+                <span className="inline-flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-white">
                   AI
                 </span>
-                Optional AI help when you need it
+                <span className="truncate">Optional AI help when you need it</span>
               </div>
             </div>
           </motion.div>
@@ -154,7 +154,7 @@ function Header() {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25, duration: 0.5 }}
-          className="mt-8 sm:mt-10 flex items-center max-w-xl md:max-w-2xl mx-auto border border-border bg-white rounded-full overflow-hidden shadow-lg"
+          className="mt-8 sm:mt-10 flex items-center max-w-full sm:max-w-xl md:max-w-2xl mx-auto border border-border bg-white rounded-full overflow-hidden shadow-lg"
         >
           <div className="pl-4 text-muted">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
