@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react'
 import { blog_data, blogCategories } from '../assets/assets'
-import { motion, LayoutGroup } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import BlogCard from './BlogCard';
 import { useAppContext } from '../contexts/AppContext';
 
@@ -18,61 +18,6 @@ function BlogList() {
     }
   })
 
-
-  const categoryIcon = (cat) => {
-    switch (cat) {
-      case 'Technology':
-        return (
-          <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9.75 17L8 15.25m8 0L14.25 17M4 7h16M8 7l-4 10h16L16 7' />
-          </svg>
-        );
-      case 'Startup':
-        return (
-          <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M5 13l4 4L19 7' />
-          </svg>
-        );
-      case 'Finance':
-        return (
-          <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 8c-3 0-5 1.5-5 4s2 4 5 4 5-1.5 5-4-2-4-5-4zm0-5v5m0 8v5' />
-          </svg>
-        );
-      case 'Lifestyle':
-        return (
-          <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 6v6l4 2' />
-          </svg>
-        );
-      case 'Politics':
-        return (
-          <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4' />
-          </svg>
-        );
-      case 'Cricket':
-        return (
-          <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M13 10V3L4 14h7v7l9-11h-7z' />
-          </svg>
-        );
-      case 'Geography':
-        return (
-          <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z' />
-            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M15 11a3 3 0 11-6 0 3 3 0 016 0z' />
-          </svg>
-        );
-      default:
-        return (
-          <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M3 7h18M3 12h18M3 17h18' />
-          </svg>
-        );
-    }
-  };
-
   const sortedBlogs = useMemo(() => {
     const list = [...filteredBlogs];
     if (sortBy === 'Newest') {
@@ -84,67 +29,111 @@ function BlogList() {
     return list.sort((a, b) => (b?.description?.length || 0) - (a?.description?.length || 0));
   }, [filteredBlogs, sortBy]);
 
+  const displayBlogs = sortedBlogs.filter((blog) => menu === "All" ? true : blog.category === menu);
+
   return (
     <div
       id="blog-list-section"
-      className="px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 py-10 max-w-6xl mx-auto"
+      className="px-4 sm:px-6 lg:px-8 py-16 sm:py-20 max-w-7xl mx-auto"
     >
-      <div className="mb-6 sm:mb-8">
-        <p className="text-[11px] sm:text-xs font-semibold uppercase tracking-[0.24em] text-muted">
-          Browse
-        </p>
-        <h2 className="mt-1 text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-heading">
-          Latest posts from the community
-        </h2>
-        <p className="mt-2 text-sm sm:text-base text-muted font-medium max-w-2xl">
-          Filter by category, sort by date, and dive into stories across technology, lifestyle,
-          finance, and more.
-        </p>
+      {/* Section Header */}
+      <div className="text-center mb-10 sm:mb-14">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+        >
+          <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/10 text-accent text-xs font-semibold tracking-wide mb-4">
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+            </svg>
+            Latest Articles
+          </span>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-heading leading-tight">
+            Explore the blog
+          </h2>
+          <p className="mt-3 text-base sm:text-lg text-muted max-w-xl mx-auto">
+            Stories, ideas, and guides across technology, lifestyle, finance, and more.
+          </p>
+        </motion.div>
       </div>
 
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 my-4 sm:my-6">
-        <div className="flex flex-wrap justify-center md:justify-start gap-2">
+      {/* Filter Bar */}
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.4, delay: 0.1 }}
+        className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8 sm:mb-10 pb-6 border-b border-border"
+      >
+        <div className="flex flex-wrap justify-center sm:justify-start gap-1.5 sm:gap-2">
           {blogCategories.map((item) => (
             <button
               key={item}
               onClick={() => setMenu(item)}
-              className={`inline-flex items-center gap-2 px-3 py-2 rounded-full border ${
+              className={`px-3.5 py-2 rounded-lg text-[13px] font-medium transition-all duration-200 ${
                 menu === item
-                  ? 'border-accent text-white bg-accent shadow-md'
-                  : 'border-border text-heading bg-white hover:bg-accent-soft hover:border-accent/30 hover:shadow-sm'
-              } transition-all hover:-translate-y-0.5 font-semibold text-[11px] sm:text-xs`}
+                  ? 'bg-accent text-white shadow-sm shadow-accent/25'
+                  : 'text-muted hover:text-heading hover:bg-slate-100'
+              }`}
             >
-              <span className='text-current'>{categoryIcon(item)}</span>
-              <span className='text-sm font-semibold'>{item}</span>
+              {item}
             </button>
           ))}
         </div>
 
-        <div className="relative">
+        <div className="relative flex-shrink-0">
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className='appearance-none text-[11px] sm:text-xs font-semibold rounded-full border border-border bg-white px-3 py-2 pr-8 shadow-sm focus:outline-none focus:ring-2 focus:ring-accent text-heading'
+            className='appearance-none text-[13px] font-medium rounded-lg border border-border bg-white pl-3 pr-8 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent text-heading cursor-pointer'
           >
             <option>Newest</option>
             <option>Oldest</option>
             <option>Popular</option>
           </select>
-          <span className='pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-muted'>
+          <span className='pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-muted'>
             <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
               <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 9l-7 7-7-7' />
             </svg>
           </span>
         </div>
+      </motion.div>
+
+      {/* Results count */}
+      <div className="mb-6">
+        <p className="text-sm text-muted">
+          {displayBlogs.length === 0 ? 'No posts found' : `Showing ${displayBlogs.length} post${displayBlogs.length !== 1 ? 's' : ''}`}
+          {menu !== 'All' && <span> in <span className="text-accent font-medium">{menu}</span></span>}
+        </p>
       </div>
 
-      <div className="mt-6 sm:mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 mb-12 sm:mb-16 lg:mb-20">
-        {sortedBlogs
-          .filter((blog) => menu === "All" ? true : blog.category === menu)
-          .map((blog) => (
-            <BlogCard key={blog._id} blog={blog} />
+      {/* Blog Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7 lg:gap-8 mb-16">
+        <AnimatePresence mode="wait">
+          {displayBlogs.map((blog, index) => (
+            <BlogCard key={blog._id} blog={blog} index={index} />
           ))}
+        </AnimatePresence>
       </div>
+
+      {/* Empty state */}
+      {displayBlogs.length === 0 && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="text-center py-16"
+        >
+          <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-accent-soft flex items-center justify-center">
+            <svg className="w-8 h-8 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+            </svg>
+          </div>
+          <h3 className="text-lg font-semibold text-heading mb-1">No posts yet</h3>
+          <p className="text-muted text-sm">Check back soon or try a different category.</p>
+        </motion.div>
+      )}
     </div>
   );
 }
