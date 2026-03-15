@@ -3,9 +3,9 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
-// Set API base URL - prioritize environment variable, fallback to production URL, then localhost
-const API_URL = import.meta.env.VITE_API_URL || 
-                (import.meta.env.PROD ? "https://ved-7jpz.onrender.com/" : "http://localhost:4000");
+// Set API base URL - prioritize environment variable, fallback to production URL, then localhost (no trailing slash)
+const API_URL = import.meta.env.VITE_API_URL ||
+                (import.meta.env.PROD ? "https://ved-7jpz.onrender.com" : "http://localhost:4000");
 
 axios.defaults.baseURL = API_URL;
 

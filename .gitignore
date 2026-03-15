@@ -31,6 +31,10 @@ server/.env
 server/.env.*
 client/.env
 client/.env.*
+# Allow example files (no secrets) so others know which vars to set
+!.env.example
+!server/.env.example
+!client/.env.example
 
 # Firebase Service Account (NEVER commit!)
 serviceAccount.json

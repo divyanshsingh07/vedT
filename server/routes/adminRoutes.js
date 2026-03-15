@@ -26,15 +26,11 @@ const adminOnly = (req, res, next) => {
     next();
 };
 
-// Debug: Log route registration
-console.log('🔧 Registering admin routes...');
-
 adminRout.post("/login", adminlogin);
 adminRout.post("/register", adminRegister);
 adminRout.post("/google-login", googleLogin);
 adminRout.post("/firebase-login", firebaseLogin);
 
-console.log('✅ Admin routes registered');
 adminRout.get("/admin-accounts", auth, adminOnly, getAdminAccountsList);
 adminRout.delete("/admin-account", auth, adminOnly, deleteAdminAccount);
 

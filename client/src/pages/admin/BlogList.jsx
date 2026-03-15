@@ -639,22 +639,25 @@ const BlogList = () => {
                   <label className="block text-sm font-medium text-muted mb-1">
                     Category *
                   </label>
-                  <select
+                  <input
                     name="category"
+                    list="category-options-edit"
                     value={editForm.category}
                     onChange={handleEditInputChange}
                     className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-accent"
+                    placeholder="Select or type a category"
                     required
-                  >
-                    <option value="">Select Category</option>
-                    <option value="Technology">Tech/Startup</option>
-                    <option value="Lifestyle">Lifestyle</option>
-                    <option value="Finance">Finance</option>
-                    <option value="Politics">Politics</option>
-                    <option value="Cricket">Sports</option>
-                    <option value="Geography">Geography</option>
-                    <option value="Education">Education</option>
-                  </select>
+                  />
+                  <datalist id="category-options-edit">
+                    <option value="Technology" />
+                    <option value="Startup" />
+                    <option value="Lifestyle" />
+                    <option value="Finance" />
+                    <option value="News & Politics" />
+                    <option value="Sports" />
+                    <option value="Geopolitics" />
+                    <option value="Education" />
+                  </datalist>
                 </div>
 
                 {/* Description */}

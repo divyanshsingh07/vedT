@@ -67,30 +67,27 @@ router.post('/:id/togglePublish', auth, togglePublishedStatus);
 router.post('/togglePublish', auth, togglePublishedStatus); 
 router.post('/generateContent', auth, generateContent); 
 
-// Test endpoint for AI generation (now requires auth)
+// Test/debug endpoints disabled in production
+const isProduction = process.env.NODE_ENV === 'production';
+
 router.post('/test-ai', auth, async (req, res) => {
+  if (isProduction) return res.status(404).json({ success: false, message: 'Not found' });
   try {
     const { title, category } = req.body;
-    console.log('🧪 Testing AI endpoint with:', { title, category });
-    
     if (!title || !category) {
       return res.json({
         success: false,
         message: "Title and category are required for testing"
       });
     }
-    
-    // Import and test the Gemini function
     const { generateBlogContent } = await import('../configs/gemini.js');
     const content = await generateBlogContent(title, category);
-    
     res.json({
       success: true,
       message: "AI test successful",
       data: { content }
     });
   } catch (error) {
-    console.error('❌ AI test failed:', error);
     res.json({
       success: false,
       message: error.message
@@ -98,13 +95,9 @@ router.post('/test-ai', auth, async (req, res) => {
   }
 });
 
-// Debug endpoint for testing blog creation (now requires auth)
 router.post('/debug-create', auth, async (req, res) => {
+  if (isProduction) return res.status(404).json({ success: false, message: 'Not found' });
   try {
-    console.log('🔍 Debug blog creation test started');
-    console.log('Request body:', req.body);
-    
-    // Test basic blog creation without file upload
     const testBlog = {
       title: "Debug Test Blog",
       subtitle: "Testing blog creation",
@@ -113,15 +106,8 @@ router.post('/debug-create', auth, async (req, res) => {
       image: "https://via.placeholder.com/800x400.png", // Placeholder image
       isPublished: false
     };
-    
-    console.log('Creating test blog:', testBlog);
-    
-    // Import Blog model and create
     const { default: Blog } = await import('../models/blog.js');
     const savedBlog = await Blog.create(testBlog);
-    
-    console.log('✅ Test blog created successfully:', savedBlog._id);
-    
     res.json({
       success: true,
       message: "Debug blog creation successful",

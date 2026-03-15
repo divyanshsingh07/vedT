@@ -109,10 +109,6 @@ const AddBlog = () => {
         toast.error(data.message || 'Failed to create blog')
       }
     } catch (error) {
-      console.error('Blog creation error:', error)
-      console.error('Error response:', error.response)
-      console.error('Error data:', error.response?.data)
-      
       // More detailed error handling
       let errorMessage = 'Failed to create blog. Please try again.'
       
@@ -122,16 +118,6 @@ const AddBlog = () => {
         errorMessage = error.response.data.error
       } else if (error.message) {
         errorMessage = error.message
-      }
-      
-      // Show additional debugging info in development
-      if (process.env.NODE_ENV === 'development') {
-        console.log('Full error details:', {
-          status: error.response?.status,
-          statusText: error.response?.statusText,
-          data: error.response?.data,
-          headers: error.response?.headers
-        })
       }
       
       toast.error(errorMessage)
@@ -171,21 +157,14 @@ const AddBlog = () => {
 
     try {
       setAiGenerating(true)
-      console.log('Starting AI generation with:', { title: formData.title, category: formData.category, subtitle: formData.subTitle })
-      
-      // Call backend AI endpoint
       const { data } = await axios.post('/api/blog/generateContent', {
         title: formData.title,
         category: formData.category,
         subtitle: formData.subTitle
       })
 
-      console.log('AI generation response:', data)
-
       if (data.success) {
-        // Set the generated content in the editor
         if (editor) {
-          console.log('Setting editor content:', data.data.content)
           editor.commands.setContent(data.data.content)
           setFormData({
             ...formData,
@@ -194,12 +173,9 @@ const AddBlog = () => {
         }
         toast.success('AI content generated successfully!')
       } else {
-        console.error('AI generation failed:', data.message)
         toast.error(data.message || 'Failed to generate AI content')
       }
     } catch (error) {
-      console.error('AI generation error:', error)
-      console.error('Error response:', error.response?.data)
       toast.error(error.response?.data?.message || 'Failed to generate AI content. Please try again.')
     } finally {
       setAiGenerating(false)
@@ -311,22 +287,25 @@ const AddBlog = () => {
               <label className="block text-sm font-bold text-heading mb-1 sm:mb-2">
                 Category *
               </label>
-              <select
+              <input
                 name="category"
+                list="category-options"
                 value={formData.category}
                 onChange={handleInputChange}
                 className="w-full px-3 sm:px-4 py-3 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-accent text-sm sm:text-base font-semibold"
+                placeholder="Select or type a category"
                 required
-              >
-                <option value="">Select category</option>
-                <option value="Technology">Tech/Startup</option>
-                <option value="Lifestyle">Lifestyle</option>
-                <option value="Finance">Finance</option>
-                <option value="Politics">Politics</option>
-                <option value="Sports">Sports</option>
-                <option value="Geography">Geography</option>
-                <option value="Education">Education</option>
-              </select>
+              />
+              <datalist id="category-options">
+                <option value="Technology" />
+                <option value="Startup" />
+                <option value="Lifestyle" />
+                <option value="Finance" />
+                <option value="News & Politics" />
+                <option value="Sports" />
+                <option value="Geopolitics" />
+                <option value="Education" />
+              </datalist>
             </div>
 
             {/* Image Upload */}

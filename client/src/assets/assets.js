@@ -61,7 +61,16 @@ export const assets = {
     dashboard_icon_4,
     developerProfile,
 }
-export const blogCategories = ['All', 'Tech/Startup', 'Lifestyle', 'Finance', 'Politics', 'Sports', 'Geography', 'Education']
+export const blogCategories = [
+    'All',
+    'Tech/Startup',
+    'Lifestyle',
+    'Finance',
+    'News & Politics',
+    'Sports',
+    'Geopolitics',
+    'Education'
+]
 
 export const blog_data = [
     {

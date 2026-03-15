@@ -1,8 +1,8 @@
 import imagekit from "../configs/imagekit.js";
-import fs from "fs";
 import Blog from "../models/blog.js";
 import Comment from "../models/comments.js";
 import { generateBlogContent } from '../configs/gemini.js';
+import { sanitizeErrorMessage } from '../utils/sanitize.js';
 
 // Get all blogs
 export const getBlogs = async (req, res) => {
@@ -16,26 +16,13 @@ export const getBlogs = async (req, res) => {
             data: blogs
         });
     } catch (error) {
-        console.error('Get blogs error:', error);
-        res.json({success: false, message: error.message});
+        console.error('Get blogs error:', error.message);
+        res.json({ success: false, message: sanitizeErrorMessage(error.message) });
     }
 };
 
 export const createBlog = async (req, res) => {
     try {
-        console.log('=== CREATE BLOG DEBUG START ===');
-        console.log('Request method:', req.method);
-        console.log('Request headers:', req.headers);
-        console.log('Request body:', req.body);
-        console.log('Request files:', req.file);
-        console.log('Environment check:', {
-            hasMongoUri: !!process.env.MONGODB_URI,
-            hasImagekitPublic: !!process.env.IMAGEKIT_PUBLIC_KEY,
-            hasImagekitPrivate: !!process.env.IMAGEKIT_PRIVATE_KEY,
-            hasImagekitUrl: !!process.env.IMAGEKIT_URL_ENDPOINT,
-            isVercel: !!process.env.VERCEL
-        });
-        
         // Check if Blog field exists
         if (!req.body.Blog) {
             return res.json({
@@ -85,38 +72,19 @@ export const createBlog = async (req, res) => {
             }
         }
         
-        // Upload image to imagekit
-        console.log('=== IMAGEKIT DEBUG ===');
-        console.log('ImageKit config:', {
-            publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
-            privateKey: process.env.IMAGEKIT_PRIVATE_KEY ? 'SET' : 'NOT SET',
-            urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT
-        });
-        
         try {
             let optimizedImageUrl;
 
-            // Upload only if an image file was provided
             if (imgFile) {
-                // Use file buffer directly from memory storage (for serverless)
                 const fileBuffer = imgFile.buffer;
-                console.log('File buffer available, size:', fileBuffer.length);
-                
                 const response = await imagekit.upload({
                     file: fileBuffer,
                     fileName: imgFile.originalname,
                     folder: "/blogs",
                 });
-                
-                console.log('ImageKit upload response:', response);
-                
-                // Get imagekit url - try multiple methods
+
                 try {
-                    // Use the correct file path from response
                     const filePath = response.filePath || response.file;
-                    console.log('Using file path:', filePath);
-                    
-                    // Method 1: Use imagekit.url() with transformations
                     optimizedImageUrl = imagekit.url({
                         path: filePath,
                         transformation: [
@@ -125,27 +93,15 @@ export const createBlog = async (req, res) => {
                             {format: "webp"},
                         ],
                     });
-                    
-                    console.log('Method 1 - Generated image URL:', optimizedImageUrl);
-                    
-                    // If Method 1 fails, try Method 2: Simple URL
                     if (!optimizedImageUrl || optimizedImageUrl === '') {
                         optimizedImageUrl = imagekit.url({ path: filePath });
-                        console.log('Method 2 - Simple URL:', optimizedImageUrl);
                     }
-                    
-                    // If both methods fail, use direct URL construction
                     if (!optimizedImageUrl || optimizedImageUrl === '') {
                         optimizedImageUrl = `${process.env.IMAGEKIT_URL_ENDPOINT}${filePath}`;
-                        console.log('Method 3 - Direct URL construction:', optimizedImageUrl);
                     }
-                    
                 } catch (urlError) {
-                    console.error('URL generation error:', urlError);
-                    // Fallback to direct URL construction using filePath
                     const filePath = response.filePath || response.file;
                     optimizedImageUrl = `${process.env.IMAGEKIT_URL_ENDPOINT}${filePath}`;
-                    console.log('Fallback URL:', optimizedImageUrl);
                 }
             }
 
@@ -174,41 +130,21 @@ export const createBlog = async (req, res) => {
             }
 
             const savedBlog = await Blog.create(blogToSave);
-            console.log('Blog saved successfully:', savedBlog);
-
             res.json({success: true, message: isPublished ? "Blog created successfully" : "Draft saved successfully", blog: savedBlog});
             
         } catch (imagekitError) {
-            console.error('ImageKit error:', imagekitError);
-            console.error('Full ImageKit error details:', {
-                message: imagekitError.message,
-                stack: imagekitError.stack,
-                name: imagekitError.name
-            });
-            
-            // No file cleanup needed in memory storage (serverless)
-            
+            console.error('ImageKit error:', imagekitError.message);
             res.json({
-                success: false, 
-                message: "Image upload failed",
-                error: imagekitError.message,
-                details: "Check server console for full error details"
+                success: false,
+                message: sanitizeErrorMessage(imagekitError.message, 'Image upload failed. Please try again.')
             });
         }
         
     } catch (error) {
-        console.error('=== BLOG CREATION ERROR ===');
-        console.error('Error message:', error.message);
-        console.error('Error stack:', error.stack);
-        console.error('Error name:', error.name);
-        console.error('Full error object:', error);
-        console.log('=== CREATE BLOG DEBUG END ===');
-        
+        console.error('Blog creation error:', error.message);
         res.status(500).json({
-            success: false, 
-            message: error.message || 'Internal server error',
-            error: process.env.NODE_ENV === 'development' ? error.stack : 'Server error occurred',
-            timestamp: new Date().toISOString()
+            success: false,
+            message: sanitizeErrorMessage(error.message, 'Failed to create blog. Please try again.')
         });
     }
 }
@@ -219,7 +155,7 @@ export const getAllBlogs = async (req, res) => {
         const blogs = await Blog.find({isPublished: true}).sort({ createdAt: -1 });
         res.json({success: true, message: "Blogs retrieved successfully", data: blogs});
     } catch (error) {
-        res.json({success: false, message: error.message});
+        res.json({ success: false, message: sanitizeErrorMessage(error.message) });
     }
 }
 
@@ -233,7 +169,7 @@ export const getBlogById = async (req, res) => {
         }
         res.json({success: true, message: "Blog retrieved successfully", data: blog});
     } catch (error) {
-        res.json({success: false, message: error.message});
+        res.json({ success: false, message: sanitizeErrorMessage(error.message) });
     }
 }
 
@@ -258,7 +194,7 @@ export const deleteBlogById = async (req, res) => {
 
         res.json({success: true, message: "Blog deleted successfully", data: blog});
     } catch (error) {
-        res.json({success: false, message: error.message});
+        res.json({ success: false, message: sanitizeErrorMessage(error.message) });
     }
 }
 
@@ -284,7 +220,7 @@ export const togglePublishedStatus = async (req, res) => {
         await blog.save();
         res.json({success: true, message: "Blog published status updated successfully", data: blog});
     } catch (error) {
-        res.json({success: false, message: error.message});
+        res.json({ success: false, message: sanitizeErrorMessage(error.message) });
     }
 }
 
@@ -292,9 +228,6 @@ export const togglePublishedStatus = async (req, res) => {
 export const updateBlog = async (req, res) => {
     try {
         const { blogId } = req.params;
-        console.log('Update blog request for ID:', blogId);
-        console.log('Request body:', req.body);
-        console.log('Request files:', req.file);
         
         // Check if Blog field exists
         if (!req.body.Blog) {
@@ -353,16 +286,11 @@ export const updateBlog = async (req, res) => {
             try {
                 // Use file buffer directly from memory storage (for serverless)
                 const fileBuffer = req.file.buffer;
-                console.log('New image buffer available, size:', fileBuffer.length);
-                
                 const response = await imagekit.upload({
                     file: fileBuffer,
                     fileName: req.file.originalname,
                     folder: "/blogs",
                 });
-                
-                console.log('New image uploaded to ImageKit:', response);
-                
                 // Get optimized image URL
                 let optimizedImageUrl;
                 try {
@@ -376,7 +304,6 @@ export const updateBlog = async (req, res) => {
                         ],
                     });
                 } catch (urlError) {
-                    console.log('ImageKit URL generation error, using direct URL:', urlError.message);
                     optimizedImageUrl = response.url;
                 }
                 
@@ -400,8 +327,8 @@ export const updateBlog = async (req, res) => {
         });
  
     } catch (error) {
-        console.error('Update blog error:', error);
-        res.json({ success: false, message: error.message });
+        console.error('Update blog error:', error.message);
+        res.json({ success: false, message: sanitizeErrorMessage(error.message) });
     }
 }
 
@@ -416,7 +343,7 @@ export const addComment = async (req, res) => {
 
     }
     catch(error){
-        res.json({success: false, message: error.message});
+        res.json({ success: false, message: sanitizeErrorMessage(error.message) });
     }
 }
 
@@ -428,7 +355,7 @@ export const getBlogComments = async (req, res) => {
         res.json({success: true, message: "Comments retrieved successfully", data: comments});
     }
     catch(error){
-        res.json({success: false, message: error.message});
+        res.json({ success: false, message: sanitizeErrorMessage(error.message) });
     }
 }
 
@@ -452,7 +379,7 @@ export const deleteComment = async (req, res) => {
         await Comment.findByIdAndDelete(commentId);
         res.json({ success: true, message: "Comment deleted successfully" });
     } catch (error) {
-        res.json({success: false, message: error.message});
+        res.json({ success: false, message: sanitizeErrorMessage(error.message) });
     }
 }
 
@@ -477,10 +404,10 @@ export const generateContent = async (req, res) => {
             data: { content }
         });
     } catch (error) {
-        console.error('AI content generation error:', error);
+        console.error('AI content generation error:', error.message);
         res.json({
-            success: false, 
-            message: error.message || "Failed to generate AI content"
+            success: false,
+            message: sanitizeErrorMessage(error.message, 'Failed to generate AI content. Please try again.')
         });
     }
 }

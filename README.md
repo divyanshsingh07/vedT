@@ -229,7 +229,11 @@ echo "VITE_API_URL=http://localhost:4000" > .env
 | `IMAGEKIT_PUBLIC_KEY` | **Yes** | ImageKit public key |
 | `IMAGEKIT_PRIVATE_KEY` | **Yes** | ImageKit private key |
 | `IMAGEKIT_URL_ENDPOINT` | **Yes** | ImageKit URL (e.g. `https://ik.imagekit.io/your_id`) |
-| `GEMINI_API_KEY` | **Yes** | Google Gemini API key for AI content |
+| `GEMINI_API_KEY` | No* | Google Gemini API key (used if GROQ not set) |
+| `GROQ_API_KEY` | No* | Groq API key for AI (preferred over Gemini if set) |
+| `CORS_ORIGIN` | No | Comma-separated allowed frontend origins (e.g. `https://yourdomain.com`). If unset, default origins are used. |
+
+\* At least one of `GROQ_API_KEY` or `GEMINI_API_KEY` is required for AI blog generation.
 
 ### Client (`client/.env`)
 
@@ -448,6 +452,33 @@ Location: `.github/workflows/cicd.yml`
 | **CORS errors** | Add frontend origin to `server.js` CORS config |
 | **401 on protected routes** | Ensure token is sent as `Authorization: Bearer <token>` |
 | **Docker build fails** | Ensure `.dockerignore` excludes `node_modules`, `.env` as needed |
+| **CORS in production** | Set `CORS_ORIGIN` in server `.env` to your frontend URL(s), comma-separated |
+| **Rate limit (429)** | Default 100 req/15 min per IP in production; adjust in `server.js` if needed |
+
+---
+
+## Deploy on Render (example)
+
+- **Frontend**: e.g. https://vedt.onrender.com (or your custom domain)
+- **Backend**: e.g. https://ved-7jpz.onrender.com
+
+**Backend service (Node)**  
+In Render → Backend service → Environment, set all vars from `server/.env.example` (e.g. `NODE_ENV=production`, `MONGODB_URI`, `JWT_SECRET`, `CORS_ORIGIN`, ImageKit, AI keys). Set `CORS_ORIGIN` to your frontend URL, e.g. `https://vedt.onrender.com` (add custom domain too if you use one, comma-separated). Do not commit real `.env`; use Render’s env UI.
+
+**Frontend service (Static Site or Node)**  
+Build command: `npm install && npm run build`. Publish directory: `dist`. In Environment, set `VITE_API_URL` to your backend URL with no trailing slash, e.g. `https://ved-7jpz.onrender.com`. This is baked in at build time, so redeploy after changing it.
+
+---
+
+## Production checklist
+
+- Set `NODE_ENV=production` on the server.
+- Use a strong `JWT_SECRET` (e.g. `openssl rand -base64 32`).
+- Set `CORS_ORIGIN` to your production frontend URL(s) (e.g. `https://vedt.onrender.com`).
+- Never commit `server/.env` or `client/.env`; use `server/.env.example` and `client/.env.example` as templates.
+- Build client with `VITE_API_URL` set to your production API URL (e.g. `https://ved-7jpz.onrender.com`).
+- Test `/health` returns `database: "connected"` when DB is up.
+- Debug routes (`/api/blog/test-ai`, `/api/blog/debug-create`) are disabled in production (404).
 
 ---
 

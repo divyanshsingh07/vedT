@@ -2,8 +2,9 @@ import jwt from "jsonwebtoken";
 import Blog from "../models/blog.js";
 import Comment from "../models/comments.js";
 import Admin from "../models/admin.js";
+import { sanitizeErrorMessage } from "../utils/sanitize.js";
 
-// Env fallback for backward compatibility (used only if no DB admins exist)
+// Env fallback for backward compatibility (used only if no DB admins exist). Never hardcode credentials.
 const getEnvAdminAccounts = () => {
     const envEmail = (process.env.ADMIN_EMAIL || "").trim();
     const envPassword = (process.env.ADMIN_PASSWORD || "").trim();
@@ -11,7 +12,7 @@ const getEnvAdminAccounts = () => {
     if (envEmail && envPassword) {
         return [{ email: envEmail, password: envPassword, name: envName }];
     }
-    return [{ email: "vt8795507492@gmail.com", password: "Vedu@1906", name: "Ved Praksh Tiwari" }];
+    return [];
 };
 
 const adminlogin = async (req, res) => {
@@ -64,8 +65,9 @@ const adminlogin = async (req, res) => {
 
         return res.status(401).json({ success: false, message: "Invalid email or password." });
     } catch (error) {
-        console.error("Admin login error:", error);
-        res.status(500).json({ success: false, message: error.message });
+        console.error("Admin login error:", error.message);
+        const message = process.env.NODE_ENV === "production" ? "An error occurred. Please try again." : error.message;
+        res.status(500).json({ success: false, message });
     }
 };
 
@@ -110,8 +112,8 @@ const adminRegister = async (req, res) => {
             admin: { name: admin.name, email: admin.email }
         });
     } catch (error) {
-        console.error("Admin register error:", error);
-        res.status(500).json({ success: false, message: error.message });
+        console.error("Admin register error:", error.message);
+        res.status(500).json({ success: false, message: sanitizeErrorMessage(error.message) });
     }
 }
 
@@ -129,7 +131,7 @@ const getAllBlogsAdmin = async (req, res) => {
         res.json({success: true, blogs});
     }
     catch(error){
-        res.json({success: false, message: error.message});
+        res.json({ success: false, message: sanitizeErrorMessage(error.message) });
     }
 }
 
@@ -139,7 +141,7 @@ const getAllCommentsAdmin = async (req, res) => {
         res.json({success: true, comments});
     }
     catch(error){
-        res.json({success: false, message: error.message});
+        res.json({ success: false, message: sanitizeErrorMessage(error.message) });
     }
 }
 
@@ -168,7 +170,7 @@ const getDashboardData = async (req, res) => {
         res.json({success: true, dashboardData});
     }
     catch(error){
-        res.json({success: false, message: error.message});
+        res.json({ success: false, message: sanitizeErrorMessage(error.message) });
     }
 }
 
@@ -185,7 +187,7 @@ const deleteBlogAdmin = async (req, res) => {
         res.json({success: true, message: "Blog deleted successfully"});
     }
     catch(error){
-        res.json({success: false, message: error.message});
+        res.json({ success: false, message: sanitizeErrorMessage(error.message) });
     }
 }
 
@@ -202,7 +204,7 @@ const deleteCommentAdmin = async (req, res) => {
         res.json({success: true, message: "Comment deleted successfully"});
     }
     catch(error){
-        res.json({success: false, message: error.message});
+        res.json({ success: false, message: sanitizeErrorMessage(error.message) });
     }
 }
 
@@ -213,7 +215,7 @@ const approveCommentAdmin = async (req, res) => {
         res.json({success: true, message: "Comment approved successfully"});
     }
     catch(error){
-        res.json({success: false, message: error.message});
+        res.json({ success: false, message: sanitizeErrorMessage(error.message) });
     }
 }
 
@@ -226,7 +228,7 @@ const getAdminAccountsList = async (req, res) => {
         const adminList = [...envList, ...dbList.filter(d => !envList.some(e => e.email === d.email))];
         res.json({ success: true, adminAccounts: adminList });
     } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
+        res.status(500).json({ success: false, message: sanitizeErrorMessage(error.message) });
     }
 };
 
@@ -241,7 +243,7 @@ const deleteAdminAccount = async (req, res) => {
             res.status(400).json({ success: false, message: "Cannot remove env-configured admin. DB admins can be removed." });
         }
     } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
+        res.status(500).json({ success: false, message: sanitizeErrorMessage(error.message) });
     }
 };
 

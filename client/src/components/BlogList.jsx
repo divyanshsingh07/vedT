@@ -33,6 +33,8 @@ function BlogList() {
     if (menu === "All") return true;
     if (menu === "Tech/Startup") return blog.category === "Technology" || blog.category === "Startup";
     if (menu === "Sports") return blog.category === "Cricket" || blog.category === "Sports";
+    if (menu === "News & Politics") return blog.category === "News & Politics" || blog.category.toLowerCase() === "politics";
+    if (menu === "Geopolitics") return blog.category === "Geopolitics" || blog.category === "Geography";
     return blog.category === menu;
   });
 
